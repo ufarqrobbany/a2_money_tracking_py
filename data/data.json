@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "name": "Umar Faruq",
+    "username": "faruq",
+    "password": "testes",
+    "wallet": [
+      {
+        "id": 1,
+        "nama_dompet": "Dompet",
+        "saldo": 0,
+        "actitivy": [
+          {
+            "id": 1,
+            "waktu": 20302300,
+            "jenis": "Pemasukan",
+            "kategori": "Gaji",
+            "nominal": 1000
+          },
+          {
+            "id": 2,
+            "waktu": 20302300,
+            "jenis": "Pengeluaran",
+            "kategori": "Makan",
+            "nominal": 1000
+          }
+        ]
+      }
+    ]
+  }
+]
