@@ -57,3 +57,105 @@ def wallet_menu(username):
             elif current_selection == 4:
                 menu.home_menu(username)
             break
+
+def tampil_menu_tambah_dompet(username):
+    nama_dompet = ""
+    saldo_awal = ""
+    key = ''
+    jml_dompet = 0
+    n = 0
+    p = 1
+    status = 1
+    saldo = 0
+
+    while status == 1:
+        core.clear_screen()
+
+        # Print header
+        menu.header_menu()
+        menu.text_menu("Nama :")
+        menu.h_line()
+        menu.text_menu("Tambah dompet baru")
+        menu.h_line()
+
+        #jml_dompet = get_dompet(username, True)
+
+        menu.h_line()
+        menu.text_menu("Nama Dompet\t: ")
+        menu.text_menu("Saldo Awal\t: ", end='')
+        #format_rupiah(saldo)
+        menu.back_instruction()
+        core.goto_xy(19, 4 + jml_dompet + 5)
+
+        while True:
+            key = ord(core.get_key())
+            if (key.isalnum() or key.isdigit() or key == ' ' or (n<20)):
+                if (p == 1):
+                    nama_dompet = key
+                    n += 1
+                    print(key)
+                    core.goto_xy(19 + n, 8 + p + jml_dompet)
+                elif ((p == 2) and (key >= '0' and key <= '9') and (n < 8)):
+                    saldo_awal[n] = key
+                    n += 1
+                    saldo = int(''.join(saldoawal))
+                    core.goto_xy(19, 8 + p + jml_dompet)
+                    print("                  ", end='')
+                    core.goto_xy(19, 8 + p + jml_dompet)
+                    #format_rupiah(saldo)
+                    #core.goto_xy(19 + get_length_format_rupiah(saldo) + 2, 8 + p + jml_dompet)
+            elif key == 13:
+                if n == 0 and p == 2:
+                    saldo = 0
+                    p = 1
+                    n = 0
+                    break
+                if n > 0:
+                    if p == 1:
+                        nama_dompet[n] = '\0'
+                        p = 2
+                        n = 0
+                        core.goto_xy(19 + n + 2, 8 + p + jml_dompet)
+                    else:
+                        saldoawal[n] = '\0'
+                        saldo = int(''.join(saldoawal))
+                        p = 1
+                        n = 0
+                        break
+            elif key == 8:
+                if n > 0:
+                    if p == 1:
+                        print("\b \b", end='', flush=True)
+                    n -= 1
+                    if p == 2:
+                        saldoawal[n] = '\0'
+                        saldo = int(''.join(saldoawal)) if saldoawal[0] else 0
+                        core.goto_xy(19, 5 + p + jml_dompet)
+                        print("                  ", end='')
+                        core.goto_xy(19, 5 + p + jml_dompet)
+                        #format_rupiah(saldo)
+                        #core.goto_xy(19 + get_length_format_rupiah(saldo) + 2, 5 + p + jml_dompet)
+            elif key == 27:
+                break
+            
+        if key == 13:
+            core.goto_xy(1, 9 + 2 + jml_dompet)
+            #status = tambah_dompet(username, nama_dompet, saldo)
+            input()
+
+            if status == 1:
+                saldoawal = [' '] * 9
+                saldo = 0
+
+                core.goto_xy(19, 5 + p + jml_dompet)
+                print("                  ", end='')
+                core.goto_xy(19, 5 + p + jml_dompet)
+                #format_rupiah(saldo)
+                #core.goto_xy(19 + get_length_format_rupiah(saldo) + 2, 5 + p + jml_dompet)
+
+        if key == 27 or status == 0:
+            break
+
+    if status == 0:
+        print()
+        #tampil_menu_dompet(username)
