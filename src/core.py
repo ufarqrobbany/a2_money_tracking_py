@@ -58,3 +58,18 @@ def hash_password(password):
         
 def format_rupiah(nominal):
     return f"Rp{'{:,}'.format(nominal).replace(',', '.')},00"
+
+
+def check_date(day, month, year):
+    if month < 1 or month > 12:
+        return 1
+
+    days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+    if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+        days_in_month[1] = 29
+
+    if day < 1 or day > days_in_month[month - 1]):
+        return 1;
+
+    return 0
