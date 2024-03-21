@@ -58,3 +58,21 @@ def hash_password(password):
         
 def format_rupiah(nominal):
     return f"Rp{'{:,}'.format(nominal).replace(',', '.')},00"
+
+def isLeapYear(year):
+    return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+
+def cekTanggalValid(tgl, bln, thn):
+    if (bln < 1 or bln > 12) :
+        return 1
+
+    daysInMonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+    if isLeapYear(thn):
+        daysInMonth[2] = 29
+
+    # Periksa validitas tanggal
+    if (tgl < 1 or tgl > daysInMonth[bln]):
+        return 2;  # Tanggal tidak valid
+
+    return 0
