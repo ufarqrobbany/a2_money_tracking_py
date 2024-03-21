@@ -3,6 +3,8 @@ import ctypes
 import msvcrt
 import json
 import hashlib
+import datetime
+
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -69,7 +71,35 @@ def check_date(day, month, year):
     if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
         days_in_month[1] = 29
 
-    if day < 1 or day > days_in_month[month - 1]):
-        return 1;
+    if day < 1 or day > days_in_month[month - 1]:
+        return 1
 
     return 0
+
+
+def get_date(day=True, date=True, month=True, year=True):
+    nama_hari = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+    nama_bulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+    tanggal_saat_ini = datetime.datetime.now()
+    hari = nama_hari[tanggal_saat_ini.weekday()]
+    tanggal = tanggal_saat_ini.day
+    bulan = nama_bulan[tanggal_saat_ini.month]
+    tahun = tanggal_saat_ini.year
+
+    result = ""
+    if day:
+        result += hari
+    if date:
+        if result:
+            result += ", "
+        result += str(tanggal)
+    if month:
+        if result:
+            result += " "
+        result += bulan
+    if year:
+        if result:
+            result += " "
+        result += str(tahun)
+
+    return result.strip()
