@@ -3,6 +3,7 @@ import ctypes
 import msvcrt
 import json
 import hashlib
+import datetime
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -76,3 +77,36 @@ def cekTanggalValid(tgl, bln, thn):
         return 2;  # Tanggal tidak valid
 
     return 0
+
+def getDate(D=False, d=False, m=False, y=False):
+    # Daftar nama hari dalam Bahasa Indonesia
+    nama_hari = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+
+    # Daftar nama bulan dalam Bahasa Indonesia
+    nama_bulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+
+    # Mendapatkan tanggal saat ini
+    tanggal_saat_ini = datetime.datetime.now()
+
+    # Mendapatkan nama hari dalam Bahasa Indonesia
+    hari = nama_hari[tanggal_saat_ini.weekday()]
+
+    # Mendapatkan tanggal
+    tanggal = tanggal_saat_ini.day
+
+    # Mendapatkan nama bulan dalam Bahasa Indonesia
+    bulan = nama_bulan[tanggal_saat_ini.month]
+
+    # Mendapatkan tahun
+    tahun = tanggal_saat_ini.year
+
+    if D:
+        return hari
+    elif d:
+        return tanggal
+    elif m:
+        return bulan
+    elif y:
+        return tahun
+    else:
+        return f"{hari}, {tanggal} {bulan} {tahun}"
