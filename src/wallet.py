@@ -57,3 +57,28 @@ def wallet_menu(username):
             elif current_selection == 4:
                 menu.home_menu(username)
             break
+
+def newDompet(nama_dompet, saldo_awal):
+    dataBaru = {
+        "id": 1,
+        "nama_dompet": nama_dompet,
+        "saldo": saldo_awal,
+        "actitivy": []
+    }
+    return [dataBaru]
+
+def tambahDompet(username, nama_dompet, saldo_awal):
+    data = core.read_data()
+    found = False
+    index = None
+    for i in range(len(data)):
+        if data[i]['username'] == username:
+            found = True
+            index = i
+            break
+    if found:
+        data[index]['wallet'].append(newDompet(nama_dompet, saldo_awal))
+        core.write_data(data)
+        return 0
+    else:
+        return 1
