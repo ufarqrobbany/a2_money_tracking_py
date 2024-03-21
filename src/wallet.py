@@ -82,3 +82,20 @@ def tambahDompet(username, nama_dompet, saldo_awal):
         return 0
     else:
         return 1
+    
+def hapusDompet(username, nama_dompet):
+    data = core.read_data()
+    found = False
+    index = None
+    for i in range(len(data)):
+        if data[i]['username'] == username:
+            found = True
+            index = i
+            break
+    if found:
+        for j in range(len(data[index]['wallet'])):
+            if data[index]['wallet'][j]['nama_dompet'] == nama_dompet:
+                data[index]['wallet'] = data[index]['wallet'][:j] + data[index]['wallet'][j+1:]
+                core.write_data(data)
+                return 0
+    return 1
