@@ -302,3 +302,24 @@ def reduce_balance(username, id_dompet, nominal):
         print("\nGagal membuka file dompet\n")
     except Exception as e:
         print(f"\nError: {str(e)}\n")
+
+def change_wallet_name(username, id_dompet, newName):
+    file_name = f"data/data.json"
+
+    try:
+        with open(file_name, "r+") as file:
+            data = json.load(file)
+            for user in data:
+                if user['username'] == username:
+                    for wallet in user['wallet']:
+                        if wallet['id'] == id_dompet:
+                            wallet['nama_dompet'] = newName
+                            file.seek(0)
+                            json.dump(data, file, indent=4)
+                            file.truncate()
+                            return
+            print(f"\nDompet dengan ID '{id_dompet}' tidak ditemukan\n")
+    except FileNotFoundError:
+        print(f"\nGagal membuka file dompet {file_name}\n")
+    except Exception as e:
+        print(f"\nError: {str(e)}\n")
