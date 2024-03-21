@@ -2,7 +2,7 @@ import os
 import ctypes
 import msvcrt
 import json
-
+import hashlib
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -48,5 +48,28 @@ def write_data(data):
         json.dump(data, file)
 
 
-# def hash_password(password):
-# def format_rupiah(nominal):
+def hash_password(password):
+    password_bytes = password.encode('utf-8')
+    sha256 = hashlib.sha256()
+    sha256.update(password_bytes)
+    encrypted_password = sha256.hexdigest()
+    return encrypted_password
+    
+        
+def format_rupiah(nominal):
+    return f"Rp{'{:,}'.format(nominal).replace(',', '.')},00"
+
+
+def check_date(day, month, year):
+    if month < 1 or month > 12:
+        return 1
+
+    days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+    if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+        days_in_month[1] = 29
+
+    if day < 1 or day > days_in_month[month - 1]):
+        return 1;
+
+    return 0
