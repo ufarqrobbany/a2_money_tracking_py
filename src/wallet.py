@@ -160,7 +160,10 @@ def tampil_menu_tambah_dompet(username):
         print()
         #tampil_menu_dompet(username)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 
 def get_last_dompet(username):
     file_name = f"data/data.json"
