@@ -49,6 +49,31 @@ def wallet_menu(username):
             break
 
 
+def newDompet(nama_dompet, saldo_awal):
+    dataBaru = {
+        "id": 1,
+        "nama_dompet": nama_dompet,
+        "saldo": saldo_awal,
+        "actitivy": []
+    }
+    return [dataBaru]
+
+def tambahDompet(username, nama_dompet, saldo_awal):
+    data = core.read_data()
+    found = False
+    index = None
+    for i in range(len(data)):
+        if data[i]['username'] == username:
+            found = True
+            index = i
+            break
+    if found:
+        data[index]['wallet'].append(newDompet(nama_dompet, saldo_awal))
+        core.write_data(data)
+        return 0
+    else:
+        return 1
+
 def add_wallet_menu(username):
     nama_dompet = ""
     saldo_awal = ""
@@ -180,5 +205,4 @@ def add_balance(username, id_dompet, nominal):
         print("\nGagal membuka file dompet\n")
     except Exception as e:
         print(f"\nError: {str(e)}\n")
-
 
