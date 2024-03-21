@@ -159,3 +159,35 @@ def tampil_menu_tambah_dompet(username):
     if status == 0:
         print()
         #tampil_menu_dompet(username)
+    
+def reduce_balance(username, id_dompet, nominal):
+    file_name = "data/data.json"
+
+    try:
+        with open(file_name, "r+") as file:
+            data = json.load(file)
+            for user in data:
+                if user.get("username") == username:
+                    wallets = user.get("wallet", [])
+                    for wallet in wallets:
+                        if wallet.get("id") == id_dompet:
+                            saldo = wallet.get("saldo")
+                            if saldo is not None:
+                                new_saldo = saldo + nominal
+                                wallet["saldo"] = new_saldo
+                                file.seek(0)
+                                json.dump(data, file, indent=4)
+                                file.truncate()
+                                return
+                            else:
+                                print("\nSaldo tidak ditemukan untuk dompet tersebut\n")
+                                return
+                    print("\nDompet dengan ID yang diberikan tidak ditemukan\n")
+                    return
+            print("\nUsername tidak ditemukan\n")
+    except FileNotFoundError:
+        print("\nGagal membuka file dompet\n")
+    except Exception as e:
+        print(f"\nError: {str(e)}\n")
+
+
