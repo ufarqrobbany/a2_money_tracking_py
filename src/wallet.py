@@ -242,6 +242,25 @@ def add_wallet_menu(username):
     if status == 0:
         print()
         #tampil_menu_dompet(username)
+
+
+def get_last_dompet(username):
+    file_name = f"data/data.json"
+    id_dompet = 0
+
+    try:
+        with open(file_name, "r") as file:
+            data = json.load(file)
+            for user in data:
+                if user['username'] == username:
+                    for wallet in user['wallet']:
+                        id_dompet = wallet['id']
+        return id_dompet
+    except FileNotFoundError:
+        print(f"\nGagal membuka file dompet {file_name}\n")
+    except Exception as e:
+        print(f"\nError: {str(e)}\n")
+
     
 def add_balance(username, id_dompet, nominal):
     file_name = "data/data.json"
