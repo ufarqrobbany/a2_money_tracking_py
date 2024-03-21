@@ -2,7 +2,7 @@ import os
 import ctypes
 import msvcrt
 import json
-
+import hashlib
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -48,5 +48,13 @@ def write_data(data):
         json.dump(data, file)
 
 
-# def hash_password(password):
-# def format_rupiah(nominal):
+def hash_password(password):
+    password_bytes = password.encode('utf-8')
+    sha256 = hashlib.sha256()
+    sha256.update(password_bytes)
+    encrypted_password = sha256.hexdigest()
+    return encrypted_password
+    
+        
+def format_rupiah(nominal):
+    return f"Rp{'{:,}'.format(nominal).replace(',', '.')},00"
