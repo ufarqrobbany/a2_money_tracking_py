@@ -321,3 +321,49 @@ def reduce_balance(username, id_dompet, nominal):
         print("\nGagal membuka file dompet\n")
     except Exception as e:
         print(f"\nError: {str(e)}\n")
+
+def tampil_menu_input_nama_dompet (username, id_dompet):
+    namabaru = ""
+    key = ''
+    n = 0
+    status = 1
+
+    while (status == 1 and key!= 27):
+        core.clear_screen
+        menu.header_menu
+        menu.text_menu("Nama : " ) #, get_nama_user(username))
+        menu.h_line
+        menu.text_menu("Ubah nama dompet \"%s\" \n") # % get_nama_dompet(username, id_dompet))
+        menu.h_line
+        menu.text_menu("Nama Baru : ")
+        menu.back_instruction
+
+        core.goto_xy(13,7)
+
+        while True:
+            key = ord(core.get_key())
+
+            if (key.isalnum() or key == ' ') and n < 20:
+                namabaru += key
+                n += 1
+                print(key, end='', flush=True)
+                core.goto_xy(13 + n, 7)
+            elif key == 13:  # Enter key
+                if n > 0:
+                    break
+            elif key ==  8:  # Backspace key
+                if n > 0:
+                    print("\b \b", end='', flush=True)
+                    n -= 1
+                    namabaru = namabaru[:-1]
+            elif key == 27:  # ESC key
+                break
+
+        if key == 13:
+            core.goto_xy(1, 8)
+            #status = ubah_nama_dompet(username, id_dompet, namabaru)
+            core.get_key()
+
+    if (status == 0 or key == 27):
+        print()
+        #tampil_menu_dompet(username)
