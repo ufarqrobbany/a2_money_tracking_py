@@ -1,36 +1,25 @@
-import menu
-import core
+from src import core
+from src import menu
+
 
 def wallet_menu(username):
     current_selection = 1
-    jml_dompet = 0
-    key = ""
 
     core.clear_screen()
-    # print header
     menu.header_menu()
-    menu.h_line()
     menu.text_menu("Nama : ")
     menu.h_line()
-
-    # tampil dompet
-    # jml_dompet = get_dompet(username, True)
+    total_wallet = 0
     menu.h_line()
-    core.gotoxy(1, 10 + jml_dompet)
 
-    # isi
     while True:
-        core.gotoxy(1, 4)
-        # gotoxy(1, 4 + jml_dompet + 3)
+        core.goto_xy(0, 4 + total_wallet + 3)
         menu.option("Tambah Dompet", current_selection, 1)
         menu.option("Ubah Nama Dompet", current_selection, 2)
         menu.option("Hapus Dompet", current_selection, 3)
-        menu.option("Kembali", current_selection, 4 , True)
-        
-        menu.h_line()
-        print("Gunakan tombol panah untuk navigasi dan tekan Enter")
+        menu.option("Kembali", current_selection, 4, True)
+        menu.nav_instruction()
 
-        # navigasi menu
         key = ord(core.get_key())
         
         if key == 72 and current_selection > 1:
@@ -39,26 +28,28 @@ def wallet_menu(username):
             current_selection += 1
         elif key == 13:
             if current_selection == 1:
-                if jml_dompet < 10:
+                if total_wallet < 10:
                     # tampil_menu_tambah_dompet(username)
+                    pass
                 else:
-                    core.gotoxy(1, 12 + jml_dompet)
-                    print("Tidak bisa menambah dompet, maksimal 10 dompet dalam 1 akun")
+                    menu.show_message("Tidak bisa menambah dompet, maksimal 10 dompet", 12 + total_wallet, True)
                     core.get_key()
             elif current_selection == 2:
                 # tampil_menu_ubah_nama_dompet(username)
+                pass
             elif current_selection == 3:
-                if jml_dompet > 1:
+                if total_wallet > 1:
                     # tampil_menu_hapus_dompet(username)
+                    pass
                 else:
-                    core.gotoxy(1, 12 + jml_dompet)
-                    print("Tidak bisa menghapus dompet lagi, sisakan 1 dompet di akunmu")
+                    menu.show_message("Tidak bisa menghapus dompet, sisakan 1 dompet di akunmu", 12 + total_wallet, True)
                     core.get_key()
             elif current_selection == 4:
                 menu.home_menu(username)
             break
 
-def tampil_menu_tambah_dompet(username):
+
+def add_wallet_menu(username):
     nama_dompet = ""
     saldo_awal = ""
     key = ''
@@ -137,7 +128,7 @@ def tampil_menu_tambah_dompet(username):
                         #core.goto_xy(19 + get_length_format_rupiah(saldo) + 2, 5 + p + jml_dompet)
             elif key == 27:
                 break
-            
+
         if key == 13:
             core.goto_xy(1, 9 + 2 + jml_dompet)
             #status = tambah_dompet(username, nama_dompet, saldo)
