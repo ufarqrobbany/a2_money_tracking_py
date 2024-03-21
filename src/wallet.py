@@ -160,7 +160,7 @@ def tampil_menu_tambah_dompet(username):
         print()
         #tampil_menu_dompet(username)
     
-def reduce_balance(username, id_dompet, nominal):
+def add_balance(username, id_dompet, nominal):
     file_name = "data/data.json"
 
     try:
