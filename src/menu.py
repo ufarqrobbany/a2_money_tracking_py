@@ -1,5 +1,6 @@
 from src import core
 from src import account
+from src import wallet
 
 
 def h_line():
@@ -89,19 +90,14 @@ def first_menu():
 
 def home_menu(username):
     current_selection = 1
-    key = None
 
     core.clear_screen()
     header_menu()
-    
     text_menu("Nama :")
     h_line()
-    text_menu("Total Saldo saat ini: ")
-    #format_rupiah(get_total_saldo(username))
-    text_menu("Pemasukan Bulan Ini(Maret 2024): ")
-    #format_rupiah(get_pemasukan_bulanan(username))
-    text_menu("Pengeluaran Bulan Ini(Maret 2024): ")
-    #format_rupiah(get_pengeluaran_bulanan(username))
+    text_menu("Total Saldo saat ini\t\t\t:")
+    text_menu(f"Pemasukan Bulan Ini ({core.get_date(False, False)})\t:")
+    text_menu(f"Pengeluaran Bulan Ini ({core.get_date(False, False)})\t:")
     h_line()
     core.goto_xy(0, 13)
     nav_instruction()
@@ -122,12 +118,13 @@ def home_menu(username):
             current_selection += 1
         elif key == 13:
             if current_selection == 1:
-                #menu catat
+                # menu catat
+                pass
             elif current_selection == 2:
-                #menu rekap
+                # menu rekap
+                pass
             elif current_selection == 3:
-                #menu dompet
-            elif current_selection == 4:
-                exit(1)
+                wallet.wallet_menu(username)
+                pass
             break
        
