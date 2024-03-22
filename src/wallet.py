@@ -1,6 +1,6 @@
 from src import core
 from src import menu
-
+import json
 
 def wallet_menu(username):
     current_selection = 1
@@ -140,6 +140,23 @@ def tambahDompet(username, nama_dompet, saldo_awal):
         return 0
     else:
         return 1
+    
+def hapusDompet(username, nama_dompet):
+    data = core.read_data()
+    found = False
+    index = None
+    for i in range(len(data)):
+        if data[i]['username'] == username:
+            found = True
+            index = i
+            break
+    if found:
+        for j in range(len(data[index]['wallet'])):
+            if data[index]['wallet'][j]['nama_dompet'] == nama_dompet:
+                data[index]['wallet'] = data[index]['wallet'][:j] + data[index]['wallet'][j+1:]
+                core.write_data(data)
+                return 0
+    return 1
 
 def add_wallet_menu(username):
     nama_dompet = ""
@@ -322,6 +339,7 @@ def reduce_balance(username, id_dompet, nominal):
     except Exception as e:
         print(f"\nError: {str(e)}\n")
 
+
 def tampil_menu_input_nama_dompet (username, id_dompet):
     namabaru = ""
     key = ''
@@ -367,3 +385,25 @@ def tampil_menu_input_nama_dompet (username, id_dompet):
     if (status == 0 or key == 27):
         print()
         #tampil_menu_dompet(username)
+
+def change_wallet_name(username, id_dompet, newName):
+    file_name = f"data/data.json"
+
+    try:
+        with open(file_name, "r+") as file:
+            data = json.load(file)
+            for user in data:
+                if user['username'] == username:
+                    for wallet in user['wallet']:
+                        if wallet['id'] == id_dompet:
+                            wallet['nama_dompet'] = newName
+                            file.seek(0)
+                            json.dump(data, file, indent=4)
+                            file.truncate()
+                            return
+            print(f"\nDompet dengan ID '{id_dompet}' tidak ditemukan\n")
+    except FileNotFoundError:
+        print(f"\nGagal membuka file dompet {file_name}\n")
+    except Exception as e:
+        print(f"\nError: {str(e)}\n")
+
