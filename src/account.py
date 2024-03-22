@@ -216,3 +216,20 @@ def register(name, username, password, re_password):
         core.goto_xy(0, 9)
         menu.show_message("Password dan Ulangi Password tidak sama", 9, 1)
         return 1
+
+def get_acc_name(username):
+    file_name = "data/data.json"
+
+    try:
+        with open(file_name, "r") as file:
+            data = json.load(file)
+            for user in data:
+                if user['username'] == username:
+                    return user['name']
+    except FileNotFoundError:
+        print(f"\nGagal membuka file {file_name}\n")
+    except Exception as e:
+        print(f"\nError: {str(e)}\n")
+    
+    print(f"\nNama Akun dengan username '{username}' tidak ditemukan\n")
+    return None
