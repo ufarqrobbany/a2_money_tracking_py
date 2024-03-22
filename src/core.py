@@ -59,7 +59,7 @@ def hash_password(password):
     
         
 def format_rupiah(nominal):
-    return f"Rp{'{:,}'.format(nominal).replace(',', '.')},00"
+    return f"Rp{'{:,}'.format(nominal).replace(',', '.')}"
 
 
 def check_date(day, month, year):
@@ -103,3 +103,4 @@ def get_date(day=True, date=True, month=True, year=True):
         result += str(tahun)
 
     return result.strip()
+
