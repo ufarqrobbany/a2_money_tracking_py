@@ -93,9 +93,9 @@ def home_menu(username):
 
     core.clear_screen()
     header_menu()
-    text_menu("Nama :")
+    text_menu(f"Nama : {account.get_account_name(username)}")
     h_line()
-    text_menu("Total Saldo saat ini\t\t\t:")
+    text_menu(f"Total Saldo saat ini\t\t\t: {core.format_rupiah(wallet.get_total_balance(username))}")
     text_menu(f"Pemasukan Bulan Ini ({core.get_date(False, False)})\t:")
     text_menu(f"Pengeluaran Bulan Ini ({core.get_date(False, False)})\t:")
     h_line()
@@ -106,10 +106,10 @@ def home_menu(username):
         core.goto_xy(0, 9)
         option("Catat", current_selection, 1)
         option("Lihat Rekap", current_selection, 2)
-        option("Dompet", current_selection, 3 )
+        option("Dompet", current_selection, 3)
         option("Keluar", current_selection, 4, True)
         core.goto_xy(0, 0)
-        
+
         key = ord(core.get_key())
 
         if key == 72 and current_selection > 1:
@@ -127,4 +127,4 @@ def home_menu(username):
                 wallet.wallet_menu(username)
                 pass
             break
-       
+
