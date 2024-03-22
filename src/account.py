@@ -62,11 +62,11 @@ def login_menu():
             core.goto_xy(0, 7)
             status = login(username, password)
             core.get_key()
-            username = ""
-            password = ""
             menu.show_message("", 7)
             if status == 0:
                 menu.home_menu(username)
+            username = ""
+            password = ""
 
     if key == 27:
         menu.first_menu()
@@ -218,80 +218,13 @@ def register(name, username, password, re_password):
         menu.show_message("Password dan Ulangi Password tidak sama", 9, 1)
         return 1
 
-def get_acc_name(username):
-    file_name = "data/data.json"
 
-    try:
-        with open(file_name, "r") as file:
-            data = json.load(file)
-            for user in data:
-                if user['username'] == username:
-                    return user['name']
-    except FileNotFoundError:
-        print(f"\nGagal membuka file {file_name}\n")
-    except Exception as e:
-        print(f"\nError: {str(e)}\n")
-    
-    print(f"\nNama Akun dengan username '{username}' tidak ditemukan\n")
-    return None
+def get_account_name(username):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            return user["name"]
 
-def tampil_menu_catat_pengeluaran(username):
-	key = ''
-    nominalstr = ''
-    n = 0
-    status = 1
-    nominal = 0
-    
-    menu.header_menu()
-    menu.text_menu("Nama  : " + ) #getNamaUser(Username))
-    menu.h_line()
-    menu.text_menu("Catat Pengeluaran")
-    menu.h_line()
-    menu.text_menu("Nominal ", end='')
-    #formatRupiah(nominal)
-    print()
-    menu.h_line()
-    menu.back_instruction()
-    core.goto_xy(13, 7)
-    
-    while key !=  27 :  
-        key = msvcrt.getch()
+    print(f"   Nama Akun dengan username '{username}' tidak ditemukan")
+    return ''
 
-        if key.isdigit() and n < 9:
-            if not (n == 0 and key == b'0'):
-                nominalstr += key.decode()
-                n += 1
-                nominal = int(nominalstr)
-
-                core.goto_xy(11, 7)
-                print("                  ", end='')
-                core.gotoxy(11, 7)
-                #format_rupiah(nominal)
-                core.gotoxy(11 + '''getLengthFormatRupiah(nominal) + ''' 2, 7)
-
-        elif key == 13:  # Enter key
-            if n > 0:
-                nominal = int(nominalstr)
-                n = 0
-                break
-
-        elif key == 8:  # Backspace key
-            if n > 0:
-                n -= 1
-
-                nominalstr = nominalstr[:-1]
-                if nominalstr == '':
-                    nominal = 0
-                else:
-                    nominal = int(nominalstr)
-
-                core.goto_xy(11, 7)
-                print("                  ", end='')
-                core.goto_xy(11, 7)
-                #format_rupiah(nominal)
-                core.goto_xy(11 + '''getLengthFormatRupiah(nominal) + ''' 2, 7)
-
-    if key == 13:
-        #tampil_pilih_kategori(username, 1, nominal)
-    if key == 27:
-        #tampil_menu_catat(username)
