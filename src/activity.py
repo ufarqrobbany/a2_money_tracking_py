@@ -14,7 +14,7 @@ def record_income(username, id_wallet, category, amount):
                     wallets = user.get("wallet", [])
                     for wallet in wallets:
                         if wallet.get("id") == id_wallet:
-                            activities = wallet.get("actitivy", [])
+                            activities = wallet.get("activity", [])
                             activity = {
                                 "id": len(activities) + 1,
                                 "waktu": str(curr),
@@ -52,7 +52,7 @@ def record_outcome(username, id_wallet, category, amount):
                     wallets = user.get("wallet", [])
                     for wallet in wallets:
                         if wallet.get("id") == id_wallet:
-                            activities = wallet.get("actitivy", [])
+                            activities = wallet.get("activity", [])
                             activity = {
                                 "id": len(activities) + 1,
                                 "waktu": str(curr),
