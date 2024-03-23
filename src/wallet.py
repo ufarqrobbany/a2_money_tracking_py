@@ -258,8 +258,64 @@ def add_wallet(username, wallet_name, first_balance):
                     #tampil_menu_input_nama_dompet(username, current_selection)
 
             if key == 13:
-                break         
+                break      
 
+def change_wallet_name_input(username, wallet_id):
+    new_name = ""
+    input_length = 0
+    status = 1
+
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.h_line()
+    menu.text_menu(f"Ubah Nama Dompet : {get_wallet_name(username, wallet_id)}")
+    menu.h_line()
+    menu.text_menu("Nama Baru\t:")
+
+    while status == 1:
+        core.goto_xy(0, 8)
+        menu.back_instruction()
+        core.goto_xy(18, 7)
+
+        while True:
+            key = ord(core.get_key())
+            if core.check_key(key) and (input_length < 20):
+                new_name += chr(key)
+                print(f"\033[92m{chr(key)}\033[0m")
+                input_length += 1
+                core.goto_xy(18 + input_length, 7)
+            elif key == 13:
+                if input_length > 0:
+                    input_length = 0
+                    break
+            elif key == 8:
+                if input_length > 0:
+                    print("\b \b")
+                    input_length -= 1
+                    new_name = new_name[:-1]
+                    core.goto_xy(18 + input_length, 7)
+            elif key == 27:
+                break
+
+        if key == 13:
+            status = change_wallet_name(username, wallet_id, new_name)
+            if status == 1:
+                menu.show_message("Nama dompet sudah ada", 8, status)
+                core.get_key()
+                new_name = ""
+                core.goto_xy(18, 7)
+                print("                     ")
+                core.goto_xy(18, 7)
+            else:
+                menu.show_message("Berhasil mengubah nama dompet", 8, status)
+                core.get_key()
+                wallet_menu(username)
+                break
+
+        if key == 27 or status == 0:
+            change_wallet_name_menu(username)
+            break
                 
 def change_wallet_name(username, wallet_id, new_name):
     data = core.read_data()
@@ -292,6 +348,13 @@ def get_total_wallet(username):
 
     return total_wallet
 
+def get_wallet_id(username, index):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for i, wallet in enumerate(user["wallet"]):
+                if i == index:
+                    return wallet["id"]
 
 def get_wallet_name(username, wallet_id):
     data = core.read_data()
