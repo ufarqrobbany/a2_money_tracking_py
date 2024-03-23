@@ -351,8 +351,20 @@ def delete_wallet_confirm_menu(username, wallet_id):
                     menu.show_message("Dompet berhasil dihapus", 10, status)
                 core.get_key()
                 wallet_menu(username)
-            break          
-
+            break      
+            
+            
+def delete_wallet(username, wallet_id):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["id"] == wallet_id:
+                    user["wallet"].remove(wallet)
+                    core.write_data(data)
+                    return 0
+            return 1
+          
           
 def display_wallet(username):
     data = core.read_data()
@@ -373,7 +385,7 @@ def get_total_wallet(username):
 
     return total_wallet
 
-
+          
 def get_wallet_id(username, index):
     data = core.read_data()
     for user in data:
@@ -456,3 +468,4 @@ def reduce_balance(username, wallet_id, amount):
                     else:
                         return 1
 
+                      
