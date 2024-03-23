@@ -58,8 +58,8 @@ def hash_password(password):
     return encrypted_password
     
         
-def format_rupiah(nominal):
-    return f"Rp{'{:,}'.format(nominal).replace(',', '.')}"
+def format_rupiah(amount):
+    return f"Rp{'{:,}'.format(amount).replace(',', '.')}"
 
 
 def check_date(day, month, year):

@@ -158,7 +158,7 @@ def register_menu():
             re_password = ""
             menu.show_message("", 9)
             if status == 0:
-                menu.home_menu(username)
+                menu.first_menu()
 
     if key == 27:
         menu.first_menu()

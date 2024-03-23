@@ -46,7 +46,7 @@ def wallet_menu(username):
                     core.get_key()
             elif current_selection == 4:
                 menu.home_menu(username)
-                break
+            break
 
 
 def add_wallet_menu(username):
@@ -66,7 +66,7 @@ def add_wallet_menu(username):
     menu.text_menu("Tambah Dompet Baru")
     menu.h_line()
     menu.text_menu("Nama Dompet Baru\t:")
-    menu.text_menu(f"Saldo Awal\t\t: {core.format_rupiah(int(first_balance))}")
+    menu.text_menu(f"Saldo Awal\t\t: \033[92m{core.format_rupiah(int(first_balance))}\033[0m")
 
     while status == 1:
         core.goto_xy(0, 11 + total_wallet)
@@ -167,104 +167,52 @@ def add_wallet(username, wallet_name, first_balance):
             return 0
 
 
- def change_wallet_name_menu(username):
+def change_wallet_name_menu(username):
     current_selection = 1
-    jml_dompet = 0
-    initiate = 1
 
     core.clear_screen()
     menu.header_menu()
-    menu.text_menu("Nama : ")
+    menu.text_menu(f"Nama : {account.get_account_name(username)}")
     menu.h_line()
     menu.text_menu("Pilih dompet yang akan diubah namanya")
     menu.h_line()
 
-    # hitung dompet
-    jml_dompet = get_dompet(username, False)
-
-    dom = None
-    file_name = "data\\wallets\\wallet_%s.dat" % username
-
-    with open(file_name, "rb") as file:
-        while True:
-            id_kosong = []
-            kosong = 0
-            os.system("cls" if os.name == "nt" else "clear")
-
-            if initiate == 1:
-                print("[%c] " % chr(254))
-
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
             while True:
-                data = file.read(sizeof(struct Wallet))
-                if not data:
-                    break
-                dom = struct.unpack("20s f", data)
-                if dom[0].strip() != "":
-                    if initiate == 1:
-                        print("[%c] %s, " % (chr(254), dom[0].strip()))
-                    else:
-                        print("[%c] %s, " % (chr(254) if current_selection == dom[1] or initiate == 1 else ' ', dom[0].strip()))
-                    format_rupiah(dom[1])
-                    print("\n")
-                    j += 1
-                    if current_selection == dom[1] and is_id_in_kosong(current_selection, id_kosong, kosong):
-                        current_selection = dom[1]
-                    initiate += 1
-                else:
-                    id_kosong.append(dom[1])
-                    kosong += 1
+                total_wallet = 0
+                core.goto_xy(0, 7)
+                for index, wallet in enumerate(user["wallet"]):
+                    menu.option(f"{wallet["wallet_name"]}, {core.format_rupiah(wallet['balance'])}", current_selection, index + 1)
+                    total_wallet += 1
 
-            if current_selection <= 0 or is_id_in_kosong(current_selection, id_kosong, kosong):
-                for i in range(1, get_last_id_dompet(username) + 2):
-                    if i not in id_kosong:
-                        current_selection = i
-                        break
+                menu.option("Kembali", current_selection, total_wallet + 1, True)
+                menu.nav_instruction()
+                core.goto_xy(0, 0)
 
-            print("[\033[1;31m%c\033[0m] Kembali\n" % (chr(254) if current_selection == get_last_id_dompet(username) + 1 else ' '))
-            print("===================================================\n")
-            print("Gunakan tombol panah untuk navigasi dan tekan Enter")
+                key = ord(core.get_key())
 
-            # navigasi menu
-            key = input()
-
-            initiate = 2
-            file.seek(0)
-
-            if key == 72 and current_selection > 1:
-                while current_selection > 1:
+                if key == 72 and current_selection > 1:
                     current_selection -= 1
-                    if not is_id_in_kosong(current_selection, id_kosong, kosong):
-                        break
-                if is_id_in_kosong(current_selection, id_kosong, kosong):
-                    first_non_empty_id = get_first_non_empty_id(id_kosong, kosong, get_last_id_dompet(username))
-                    if first_non_empty_id > 0:
-                        current_selection = first_non_empty_id
-                current_selection = 1 if current_selection < 1 else current_selection
-            elif key == 80 and current_selection < get_last_id_dompet(username) + 1:
-                while current_selection < get_last_id_dompet(username) + 1:
+                elif key == 80 and current_selection < total_wallet + 1:
                     current_selection += 1
-                    if not is_id_in_kosong(current_selection, id_kosong, kosong):
-                        break
-                if is_id_in_kosong(current_selection, id_kosong, kosong):
-                    first_non_empty_id = get_first_non_empty_id(id_kosong, kosong, get_last_id_dompet(username))
-                    if first_non_empty_id > 0:
-                        current_selection = first_non_empty_id
-                current_selection = get_last_id_dompet(username) + 1 if current_selection > get_last_id_dompet(username) + 1 else current_selection
-            elif key == 13:
-                file.close()
-                if current_selection == get_last_id_dompet(username) + 1:
-                    #tampil_menu_dompet(username)
-                else:
-                    #tampil_menu_input_nama_dompet(username, current_selection)
-
-            if key == 13:
-                break         
+                elif key == 13:
+                    if current_selection <= total_wallet:
+                        wallet_id = get_wallet_id(username, current_selection - 1)
+                        change_wallet_name_input(username, wallet_id)
+                    elif current_selection == total_wallet + 1:
+                        wallet_menu(username)
+                    break
 
                 
 def change_wallet_name(username, wallet_id, new_name):
     data = core.read_data()
     for user in data:
         if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["wallet_name"] == new_name:
+                    return 1
             for wallet in user["wallet"]:
                 if wallet["id"] == wallet_id:
                     wallet["wallet_name"] = new_name
@@ -305,7 +253,6 @@ def get_wallet_name(username, wallet_id):
     return None
 
 
-
 def get_total_balance(username):
     data = core.read_data()
     total_balance = 0
@@ -340,29 +287,28 @@ def get_last_wallet_id(username):
     return wallet_id
 
 
-
-def add_balance(username, wallet_id, nominal):
+def add_balance(username, wallet_id, amount):
     data = core.read_data()
     for user in data:
         if user["username"] == username:
             for wallet in user["wallet"]:
                 if wallet["id"] == wallet_id:
-                    if (wallet["balance"] + nominal) <= 999999999:
-                        wallet["balance"] = wallet["balance"] + nominal
+                    if (wallet["balance"] + amount) <= 999999999:
+                        wallet["balance"] = wallet["balance"] + amount
                         core.write_data(data)
                         return 0
                     else:
                         return 1
 
 
-def reduce_balance(username, wallet_id, nominal):
+def reduce_balance(username, wallet_id, amount):
     data = core.read_data()
     for user in data:
         if user["username"] == username:
             for wallet in user["wallet"]:
                 if wallet["id"] == wallet_id:
-                    if (wallet["balance"] - nominal) >= 0:
-                        wallet["balance"] = wallet["balance"] - nominal
+                    if (wallet["balance"] - amount) >= 0:
+                        wallet["balance"] = wallet["balance"] - amount
                         core.write_data(data)
                         return 0
                     else:
