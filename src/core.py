@@ -141,3 +141,4 @@ def format_time(number):
     minute = int(time_str[2:])
     formatted_time = f"{hour:02d}:{minute:02d}"
     return formatted_time
+

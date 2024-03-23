@@ -7,7 +7,7 @@ import datetime
 from src import activity
 
 
-def record_income_amount(username, amount):
+def record_outcome_amount(username, amount):
     if amount == "0":
         input_length = 0
     else:
@@ -17,11 +17,11 @@ def record_income_amount(username, amount):
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan (Masukkan Jumlah Pemasukan)")
+    menu.text_menu("Catat Pengeluaran (Masukkan Jumlah Pengeluaran)")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu("Kategori Pemasukan\t\t: ")
-    menu.text_menu("Dompet Tujuan\t\t: ")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu("Kategori Pengeluaran\t\t: ")
+    menu.text_menu("Dompet Asal\t\t\t: ")
     menu.text_menu("Tanggal \t\t\t: ")
     menu.text_menu("Waktu \t\t\t: ")
     menu.text_menu("Keterangan (Opsional)\t: ")
@@ -60,29 +60,29 @@ def record_income_amount(username, amount):
             break
 
     if key == 13:
-        record_income_select_category(username, amount)
+        record_outcome_select_category(username, amount)
 
 
-def record_income_select_category(username, amount):
+def record_outcome_select_category(username, amount):
     current_selection = 1
 
     core.clear_screen()
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan")
+    menu.text_menu("Catat Pengeluaran")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu("Kategori Pemasukan\t\t: ")
-    menu.text_menu("Dompet Tujuan\t\t: ")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu("Kategori Pengeluaran\t\t: ")
+    menu.text_menu("Dompet Asal\t\t\t: ")
     menu.text_menu("Tanggal \t\t\t: ")
     menu.text_menu("Waktu \t\t\t: ")
     menu.text_menu("Keterangan (Opsional)\t: ")
     menu.h_line()
-    menu.text_menu("Pilih Kategori Pemasukan")
+    menu.text_menu("Pilih Kategori Pengeluaran")
     menu.h_line()
 
-    data = activity.get_category(username, "Pemasukan")
+    data = activity.get_category(username, "Pengeluaran")
     while True:
         total_category = 0
         core.goto_xy(0, 16)
@@ -102,15 +102,15 @@ def record_income_select_category(username, amount):
             current_selection += 1
         elif key == 13:
             if current_selection == 1:
-                record_income_category(username, amount)
+                record_outcome_category(username, amount)
             elif current_selection <= total_category + 1:
-                record_income_select_wallet(username, amount, data[current_selection - 2])
+                record_outcome_select_wallet(username, amount, data[current_selection - 2])
             elif current_selection == total_category + 2:
-                record_income_amount(username, amount)
+                record_outcome_amount(username, amount)
             break
 
 
-def record_income_category(username, amount):
+def record_outcome_category(username, amount):
     input_length = 0
     category = ""
 
@@ -118,11 +118,11 @@ def record_income_category(username, amount):
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan (Masukkan Kategori)")
+    menu.text_menu("Catat Pengeluaran (Masukkan Pengeluaran)")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu("Kategori Pemasukan\t\t: ")
-    menu.text_menu("Dompet Tujuan\t\t: ")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu("Kategori Pengeluaran\t\t: ")
+    menu.text_menu("Dompet Asal\t\t\t: ")
     menu.text_menu("Tanggal \t\t\t: ")
     menu.text_menu("Waktu \t\t\t: ")
     menu.text_menu("Keterangan (Opsional)\t: ")
@@ -148,30 +148,30 @@ def record_income_category(username, amount):
                 category = category[:-1]
                 core.goto_xy(34 + input_length, 8)
         elif key == 27:
-            record_income_select_category(username, amount)
+            record_outcome_select_category(username, amount)
             break
 
     if key == 13:
-        record_income_select_wallet(username, amount, category)
+        record_outcome_select_wallet(username, amount, category)
 
 
-def record_income_select_wallet(username, amount, category):
+def record_outcome_select_wallet(username, amount, category):
     current_selection = 1
 
     core.clear_screen()
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan")
+    menu.text_menu("Catat Pengeluaran")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu(f"Kategori Pemasukan\t\t: \033[92m{category}\033[0m")
-    menu.text_menu("Dompet Tujuan\t\t: ")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu(f"Kategori Pengeluaran\t\t: \033[92m{category}\033[0m")
+    menu.text_menu("Dompet Asal\t\t\t: ")
     menu.text_menu("Tanggal \t\t\t: ")
     menu.text_menu("Waktu \t\t\t: ")
     menu.text_menu("Keterangan (Opsional)\t: ")
     menu.h_line()
-    menu.text_menu("Pilih Dompet Tujuan")
+    menu.text_menu("Pilih Dompet Asal")
     menu.h_line()
 
     data = core.read_data()
@@ -199,24 +199,24 @@ def record_income_select_wallet(username, amount, category):
                 elif key == 13:
                     if current_selection <= total_wallet:
                         wallet_id = get_wallet_id(username, current_selection - 1)
-                        record_income_select_date(username, amount, category, wallet_id)
+                        record_outcome_select_date(username, amount, category, wallet_id)
                     elif current_selection == total_wallet + 1:
-                        record_income_select_category(username, amount)
+                        record_outcome_select_category(username, amount)
                     break
 
 
-def record_income_select_date(username, amount, category, wallet_id):
+def record_outcome_select_date(username, amount, category, wallet_id):
     current_selection = 1
 
     core.clear_screen()
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan")
+    menu.text_menu("Catat Pengeluaran")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu(f"Kategori Pemasukan\t\t: \033[92m{category}\033[0m")
-    menu.text_menu(f"Dompet Tujuan\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu(f"Kategori Pengeluaran\t\t: \033[92m{category}\033[0m")
+    menu.text_menu(f"Dompet Asal\t\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
     menu.text_menu("Tanggal \t\t\t: ")
     menu.text_menu("Waktu \t\t\t: ")
     menu.text_menu("Keterangan (Opsional)\t: ")
@@ -240,15 +240,15 @@ def record_income_select_date(username, amount, category, wallet_id):
             current_selection += 1
         elif key == 13:
             if current_selection == 1:
-                record_income_time(username, amount, category, wallet_id, datetime.datetime.now().date().strftime('%d%m%Y'))
+                record_outcome_time(username, amount, category, wallet_id, datetime.datetime.now().date().strftime('%d%m%Y'))
             elif current_selection == 2:
-                record_income_date(username, amount, category, wallet_id)
+                record_outcome_date(username, amount, category, wallet_id)
             elif current_selection == 3:
-                record_income_select_wallet(username, amount, category)
+                record_outcome_select_wallet(username, amount, category)
             break
 
 
-def record_income_date(username, amount, category, wallet_id):
+def record_outcome_date(username, amount, category, wallet_id):
     input_length = 0
     date = "0"
     status = 1
@@ -257,11 +257,11 @@ def record_income_date(username, amount, category, wallet_id):
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan (Masukkan Tanggal/Bulan/Tahun)")
+    menu.text_menu("Catat Pengeluaran (Masukkan Tanggal/Bulan/Tahun)")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu(f"Kategori Pemasukan\t\t: \033[92m{category}\033[0m")
-    menu.text_menu(f"Dompet Tujuan\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu(f"Kategori Pengeluaran\t\t: \033[92m{category}\033[0m")
+    menu.text_menu(f"Dompet Asal\t\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
     while status == 1:
         core.goto_xy(0, 10)
         menu.text_menu(f"Tanggal \t\t\t: {core.format_date(int(date))}")
@@ -310,7 +310,7 @@ def record_income_date(username, amount, category, wallet_id):
                     elif input_length <= 8:
                         core.goto_xy(34 + input_length + 2, 10)
             elif key == 27:
-                record_income_select_date(username, amount, category, wallet_id)
+                record_outcome_select_date(username, amount, category, wallet_id)
                 status = 0
                 break
 
@@ -320,7 +320,7 @@ def record_income_date(username, amount, category, wallet_id):
             year = int(date[4:])
             status = core.check_date(day, month, year)
             if status == 0:
-                record_income_time(username, amount, category, wallet_id, date)
+                record_outcome_time(username, amount, category, wallet_id, date)
                 break
             else:
                 date = "0"
@@ -328,7 +328,7 @@ def record_income_date(username, amount, category, wallet_id):
                 core.get_key()
 
 
-def record_income_time(username, amount, category, wallet_id, date):
+def record_outcome_time(username, amount, category, wallet_id, date):
     input_length = 0
     status = 1
     time = "0"
@@ -337,11 +337,11 @@ def record_income_time(username, amount, category, wallet_id, date):
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan (Tentukan Waktu - 24 Jam)")
+    menu.text_menu("Catat Pengeluaran (Tentukan Waktu - 24 Jam)")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu(f"Kategori Pemasukan\t\t: \033[92m{category}\033[0m")
-    menu.text_menu(f"Dompet Tujuan\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu(f"Kategori Pengeluaran\t\t: \033[92m{category}\033[0m")
+    menu.text_menu(f"Dompet Asal\t\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
     menu.text_menu(f"Tanggal \t\t\t: \033[92m{core.format_date_2(date)}\033[0m")
     while status == 1:
         core.goto_xy(0, 11)
@@ -386,7 +386,7 @@ def record_income_time(username, amount, category, wallet_id, date):
                     elif input_length <= 4:
                         core.goto_xy(34 + input_length + 1, 11)
             elif key == 27:
-                record_income_select_date(username, amount, category, wallet_id)
+                record_outcome_select_date(username, amount, category, wallet_id)
                 status = 0
                 break
 
@@ -395,7 +395,7 @@ def record_income_time(username, amount, category, wallet_id, date):
             minute = time[2:]
             status = core.check_time(hour, minute)
             if status == 0:
-                record_income_note(username, amount, category, wallet_id, date, time)
+                record_outcome_note(username, amount, category, wallet_id, date, time)
                 break
             else:
                 time = "0"
@@ -403,7 +403,7 @@ def record_income_time(username, amount, category, wallet_id, date):
                 core.get_key()
 
 
-def record_income_note(username, amount, category, wallet_id, date, time):
+def record_outcome_note(username, amount, category, wallet_id, date, time):
     input_length = 0
     note = ""
 
@@ -411,11 +411,11 @@ def record_income_note(username, amount, category, wallet_id, date, time):
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan (Tambahkan Keterangan)")
+    menu.text_menu("Catat Pengeluaran (Tambahkan Keterangan)")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu(f"Kategori Pemasukan\t\t: \033[92m{category}\033[0m")
-    menu.text_menu(f"Dompet Tujuan\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu(f"Kategori Pengeluaran\t\t: \033[92m{category}\033[0m")
+    menu.text_menu(f"Dompet Asal\t\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
     menu.text_menu(f"Tanggal \t\t\t: \033[92m{core.format_date_2(date)}\033[0m")
     menu.text_menu(f"Waktu \t\t\t: \033[92m{core.format_time(time)}\033[0m")
     menu.text_menu("Keterangan (Opsional)\t: ")
@@ -439,33 +439,33 @@ def record_income_note(username, amount, category, wallet_id, date, time):
                 note = note[:-1]
                 core.goto_xy(34 + input_length, 12)
         elif key == 27:
-            record_income_time(username, amount, category, wallet_id, date)
+            record_outcome_time(username, amount, category, wallet_id, date)
             break
 
     if key == 13:
-        record_income_confirm(username, amount, category, wallet_id, date, time, note)
+        record_outcome_confirm(username, amount, category, wallet_id, date, time, note)
         pass
 
 
-def record_income_confirm(username, amount, category, wallet_id, date, time, note):
+def record_outcome_confirm(username, amount, category, wallet_id, date, time, note):
     current_selection = 1
 
     core.clear_screen()
     menu.header_menu()
     menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu("Catat Pemasukan")
+    menu.text_menu("Catat Pengeluaran")
     menu.h_line()
-    menu.text_menu(f"Jumlah Pemasukan\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
-    menu.text_menu(f"Kategori Pemasukan\t\t: \033[92m{category}\033[0m")
-    menu.text_menu(f"Dompet Tujuan\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
+    menu.text_menu(f"Jumlah Pengeluaran\t\t: \033[92m{core.format_rupiah(int(amount))}\033[0m")
+    menu.text_menu(f"Kategori Pengeluaran\t\t: \033[92m{category}\033[0m")
+    menu.text_menu(f"Dompet Asal\t\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
     menu.text_menu(f"Tanggal \t\t\t: \033[92m{core.format_date_2(date)}\033[0m")
     menu.text_menu(f"Waktu \t\t\t: \033[92m{core.format_time(time)}\033[0m")
     menu.text_menu(f"Keterangan (Opsional)\t: \033[92m{note}\033[0m")
     menu.h_line()
-    menu.text_menu("Konfirmasi Pemasukan")
+    menu.text_menu("Konfirmasi Pengeluaran")
     balance = wallet.get_wallet_balance(username, wallet_id)
-    menu.text_menu(f"\033[95m{wallet.get_wallet_name(username, wallet_id)}\033[0m : \033[94m{core.format_rupiah(balance)}\033[0m →  \033[94m{core.format_rupiah(balance + int(amount))}\033[0m")
+    menu.text_menu(f"\033[95m{wallet.get_wallet_name(username, wallet_id)}\033[0m : \033[94m{core.format_rupiah(balance)}\033[0m →  \033[94m{core.format_rupiah(balance - int(amount))}\033[0m")
     menu.h_line()
 
     while True:
@@ -483,16 +483,16 @@ def record_income_confirm(username, amount, category, wallet_id, date, time, not
             current_selection += 1
         elif key == 13:
             if current_selection == 1:
-                status = activity.add_record(username, amount, category, wallet_id, date, time, note, "Pemasukan")
+                status = activity.add_record(username, amount, category, wallet_id, date, time, note, "Pengeluaran")
                 if status == 0:
-                    menu.show_message("Berhasil mencatat pemasukan", 19, status)
+                    menu.show_message("Berhasil mencatat pengeluaran", 19, status)
                     core.get_key()
                     menu.home_menu(username)
                     break
                 else:
-                    menu.show_message("Saldo dompet melebihi batas", 19, status)
+                    menu.show_message("Saldo dompet kurang", 19, status)
                     core.get_key()
             elif current_selection == 2:
-                record_income_note(username, amount, category, wallet_id, date, time)
+                record_outcome_note(username, amount, category, wallet_id, date, time)
                 break
 

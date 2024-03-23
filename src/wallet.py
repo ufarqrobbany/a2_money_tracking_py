@@ -8,7 +8,7 @@ def wallet_menu(username):
 
     core.clear_screen()
     menu.header_menu()
-    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
     total_wallet = get_total_wallet(username)
     display_wallet(username)
@@ -32,21 +32,23 @@ def wallet_menu(username):
             if current_selection == 1:
                 if total_wallet < 10:
                     add_wallet_menu(username)
+                    break
                 else:
                     menu.show_message("Tidak bisa menambah dompet, maksimal 10 dompet", 11 + total_wallet, True)
                     core.get_key()
             elif current_selection == 2:
                 change_wallet_name_menu(username)
+                break
             elif current_selection == 3:
                 if total_wallet > 1:
-                    # tampil_menu_hapus_dompet(username)
-                    pass
+                    delete_wallet_menu(username)
+                    break
                 else:
-                    menu.show_message("Tidak bisa menghapus dompet, sisakan 1 dompet di akunmu", 11 + total_wallet, True)
+                    menu.show_message("Sisakan 1 dompet di akunmu", 11 + total_wallet, True)
                     core.get_key()
             elif current_selection == 4:
                 menu.home_menu(username)
-            break
+                break
 
 
 def add_wallet_menu(username):
@@ -59,7 +61,7 @@ def add_wallet_menu(username):
 
     core.clear_screen()
     menu.header_menu()
-    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
     display_wallet(username)
     menu.h_line()
@@ -81,7 +83,7 @@ def add_wallet_menu(username):
                     print(f"\033[92m{chr(key)}\033[0m")
                     input_length += 1
                     core.goto_xy(26 + input_length, 8 + input_order + total_wallet)
-                elif (input_order == 2) and core.check_key(key, True) and (input_length < 9):
+                elif (input_order == 2) and core.check_key(key, True) and (input_length < 12):
                     first_balance += chr(key)
                     input_length += 1
                     core.goto_xy(26, 8 + input_order + total_wallet)
@@ -172,7 +174,7 @@ def change_wallet_name_menu(username):
 
     core.clear_screen()
     menu.header_menu()
-    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
     menu.text_menu("Pilih dompet yang akan diubah namanya")
     menu.h_line()
@@ -184,7 +186,7 @@ def change_wallet_name_menu(username):
                 total_wallet = 0
                 core.goto_xy(0, 7)
                 for index, wallet in enumerate(user["wallet"]):
-                    menu.option(f"{wallet["wallet_name"]}, {core.format_rupiah(wallet['balance'])}", current_selection, index + 1)
+                    menu.option(f"\033[95m{wallet["wallet_name"]}\033[0m, \033[94m{core.format_rupiah(wallet['balance'])}\033[0m", current_selection, index + 1)
                     total_wallet += 1
 
                 menu.option("Kembali", current_selection, total_wallet + 1, True)
@@ -213,9 +215,9 @@ def change_wallet_name_input(username, wallet_id):
 
     core.clear_screen()
     menu.header_menu()
-    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu(f"Ubah Nama Dompet : {get_wallet_name(username, wallet_id)}")
+    menu.text_menu(f"Ubah Nama Dompet : \033[95m{get_wallet_name(username, wallet_id)}\033[0m")
     menu.h_line()
     menu.text_menu("Nama Baru\t:")
 
@@ -284,7 +286,7 @@ def delete_wallet_menu(username):
 
     core.clear_screen()
     menu.header_menu()
-    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
     menu.text_menu("Pilih dompet yang akan dihapus")
     menu.h_line()
@@ -296,7 +298,7 @@ def delete_wallet_menu(username):
                 total_wallet = 0
                 core.goto_xy(0, 7)
                 for index, wallet in enumerate(user["wallet"]):
-                    menu.option(f"{wallet["wallet_name"]}, {core.format_rupiah(wallet['balance'])}", current_selection, index + 1)
+                    menu.option(f"\033[95m{wallet["wallet_name"]}\033[0m, \033[94m{core.format_rupiah(wallet['balance'])}\033[0m", current_selection, index + 1)
                     total_wallet += 1
 
                 menu.option("Kembali", current_selection, total_wallet + 1, True)
@@ -323,9 +325,9 @@ def delete_wallet_confirm_menu(username, wallet_id):
 
     core.clear_screen()
     menu.header_menu()
-    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     menu.h_line()
-    menu.text_menu(f"Konfirmasi Hapus Dompet {get_wallet_name(username, wallet_id)}")
+    menu.text_menu(f"Konfirmasi Hapus Dompet \033[95m{get_wallet_name(username, wallet_id)}\033[0m")
     menu.text_menu("Semua riwayat aktivitas pada dompet ini akan terhapus")
     menu.h_line()
 
@@ -372,7 +374,7 @@ def display_wallet(username):
         if user["username"] == username:
             menu.text_menu("List Dompet :")
             for wallet in user["wallet"]:
-                menu.text_menu(f"○ {wallet["wallet_name"]}, {core.format_rupiah(wallet['balance'])}")
+                menu.text_menu(f"○ \033[95m{wallet["wallet_name"]}\033[0m, \033[94m{core.format_rupiah(wallet['balance'])}\033[0m")
 
 
 def get_total_wallet(username):
@@ -447,8 +449,8 @@ def add_balance(username, wallet_id, amount):
         if user["username"] == username:
             for wallet in user["wallet"]:
                 if wallet["id"] == wallet_id:
-                    if (wallet["balance"] + amount) <= 999999999:
-                        wallet["balance"] = wallet["balance"] + amount
+                    if (wallet["balance"] + int(amount)) <= 999999999999:
+                        wallet["balance"] = wallet["balance"] + int(amount)
                         core.write_data(data)
                         return 0
                     else:
@@ -461,8 +463,8 @@ def reduce_balance(username, wallet_id, amount):
         if user["username"] == username:
             for wallet in user["wallet"]:
                 if wallet["id"] == wallet_id:
-                    if (wallet["balance"] - amount) >= 0:
-                        wallet["balance"] = wallet["balance"] - amount
+                    if (wallet["balance"] - int(amount)) >= 0:
+                        wallet["balance"] = wallet["balance"] - int(amount)
                         core.write_data(data)
                         return 0
                     else:
