@@ -277,6 +277,93 @@ def change_wallet_name(username, wallet_id, new_name):
                     core.write_data(data)
                     return 0
             return 1
+
+
+def delete_wallet_menu(username):
+    current_selection = 1
+
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.h_line()
+    menu.text_menu("Pilih dompet yang akan dihapus")
+    menu.h_line()
+
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            while True:
+                total_wallet = 0
+                core.goto_xy(0, 7)
+                for index, wallet in enumerate(user["wallet"]):
+                    menu.option(f"{wallet["wallet_name"]}, {core.format_rupiah(wallet['balance'])}", current_selection, index + 1)
+                    total_wallet += 1
+
+                menu.option("Kembali", current_selection, total_wallet + 1, True)
+                menu.nav_instruction()
+                core.goto_xy(0, 0)
+
+                key = ord(core.get_key())
+
+                if key == 72 and current_selection > 1:
+                    current_selection -= 1
+                elif key == 80 and current_selection < total_wallet + 1:
+                    current_selection += 1
+                elif key == 13:
+                    if current_selection <= total_wallet:
+                        wallet_id = get_wallet_id(username, current_selection - 1)
+                        delete_wallet_confirm_menu(username, wallet_id)
+                    elif current_selection == total_wallet + 1:
+                        wallet_menu(username)
+                    break
+
+                    
+def delete_wallet_confirm_menu(username, wallet_id):
+    current_selection = 1
+
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.h_line()
+    menu.text_menu(f"Konfirmasi Hapus Dompet {get_wallet_name(username, wallet_id)}")
+    menu.text_menu("Semua riwayat aktivitas pada dompet ini akan terhapus")
+    menu.h_line()
+
+    while True:
+        core.goto_xy(0, 8)
+        menu.option("Tidak, kembali", current_selection, 1)
+        menu.option("Hapus", current_selection, 2, True)
+        menu.nav_instruction()
+        core.goto_xy(0, 0)
+
+        key = ord(core.get_key())
+
+        if key == 72 and current_selection > 1:
+            current_selection -= 1
+        elif key == 80 and current_selection < 2:
+            current_selection += 1
+        elif key == 13:
+            if current_selection == 1:
+                delete_wallet_menu(username)
+            elif current_selection == 2:
+                status = delete_wallet(username, wallet_id)
+                if status == 0:
+                    menu.show_message("Dompet berhasil dihapus", 10, status)
+                core.get_key()
+                wallet_menu(username)
+            break      
+            
+            
+def delete_wallet(username, wallet_id):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["id"] == wallet_id:
+                    user["wallet"].remove(wallet)
+                    core.write_data(data)
+                    return 0
+            return 1
           
           
 def display_wallet(username):
@@ -298,17 +385,7 @@ def get_total_wallet(username):
 
     return total_wallet
 
-def delete_wallet(username, wallet_id):
-    data = core.read_data()
-    for user in data:
-        if user["username"] == username:
-            for wallet in user["wallet"]:
-                if wallet["id"] == wallet_id:
-                    user["wallet"].remove(wallet)
-                    core.write_data(data)
-                    return 0
-            return 1
-
+          
 def get_wallet_id(username, index):
     data = core.read_data()
     for user in data:
@@ -390,3 +467,5 @@ def reduce_balance(username, wallet_id, amount):
                         return 0
                     else:
                         return 1
+
+                      
