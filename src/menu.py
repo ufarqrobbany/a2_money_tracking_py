@@ -1,6 +1,10 @@
 from src import core
 from src import account
 from src import wallet
+from src import record_income
+from src import record_outcome
+from src import record_transfer
+from src import recap
 
 
 def h_line():
@@ -93,38 +97,41 @@ def home_menu(username):
 
     core.clear_screen()
     header_menu()
-    text_menu(f"Nama : {account.get_account_name(username)}")
+    text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     h_line()
-    text_menu(f"Total Saldo saat ini\t\t\t: {core.format_rupiah(wallet.get_total_balance(username))}")
-    text_menu(f"Pemasukan Bulan Ini ({core.get_date(False, False)})\t:")
-    text_menu(f"Pengeluaran Bulan Ini ({core.get_date(False, False)})\t:")
+    text_menu(f"Total Saldo saat ini (Semua Dompet)\t: \033[94m{core.format_rupiah(wallet.get_total_balance(username))}\033[0m")
+    text_menu(f"Pemasukan Bulan Ini ({core.get_date(False, False)})\t: \033[94m{core.format_rupiah(0)}\033[0m")
+    text_menu(f"Pengeluaran Bulan Ini ({core.get_date(False, False)})\t: \033[94m{core.format_rupiah(0)}\033[0m")
     h_line()
-    core.goto_xy(0, 13)
+    core.goto_xy(0, 15)
     nav_instruction()
 
     while True:
         core.goto_xy(0, 9)
-        option("Catat", current_selection, 1)
-        option("Lihat Rekap", current_selection, 2)
-        option("Dompet", current_selection, 3)
-        option("Keluar", current_selection, 4, True)
+        option("Catat Pemasukan", current_selection, 1)
+        option("Catat Pengeluaran", current_selection, 2)
+        option("Catat Transfer (Antar Dompet)", current_selection, 3)
+        option("Atur Dompet", current_selection, 4)
+        option("Lihat Rekap", current_selection, 5)
+        option("Keluar", current_selection, 6, True)
         core.goto_xy(0, 0)
 
         key = ord(core.get_key())
 
         if key == 72 and current_selection > 1:
             current_selection -= 1
-        elif key == 80 and current_selection < 4:
+        elif key == 80 and current_selection < 6:
             current_selection += 1
         elif key == 13:
             if current_selection == 1:
-                # menu catat
-                pass
+                record_income.record_income_amount(username, "0")
             elif current_selection == 2:
-                # menu rekap
-                pass
+                record_outcome.record_outcome_amount(username, "0")
             elif current_selection == 3:
+                record_transfer.record_transfer_source_wallet(username)
+            elif current_selection == 4:
                 wallet.wallet_menu(username)
-                pass
+            elif current_selection == 5:
+                recap.recap_menu(username)
             break
 

@@ -1,18 +1,24 @@
 from src import core
+from src import wallet
+
 
 def get_category(username, type):
     data = core.read_data()
     categories = []
-    for user in data:
-        if user["username"] == username:
-            for wallet in user["wallet"]:
-                for activity in wallet["activity"]:
-                    if activity["type"] == type:
-                        category = activity["category"]
-                        categories.append(category)
+    try:
+        for user in data:
+            if user["username"] == username:
+                for wallet in user["wallet"]:
+                    for activity in wallet["activity"]:
+                            if activity["type"] == type:
+                                category = activity["category"]
+                                categories.append(category)
+    except:
+        return categories
 
     unique_categories = sorted(set(categories))
     return unique_categories
+
 
 def get_last_activity_id(username, wallet_id):
     data = core.read_data()
@@ -25,10 +31,12 @@ def get_last_activity_id(username, wallet_id):
                         activity_id = activity["id"]
     return activity_id
 
+
 def add_record(username, amount, category, wallet_id, date, time, note, type, wallet_id_2=0):
     data = core.read_data()
     activity_id = get_last_activity_id(username, wallet_id) + 1
-    if type == "Transfer":
+    status = 0
+    if type != "Transfer":
         activity_data = {
             "id": activity_id,
             "datetime": f"{date} {time}",
@@ -50,16 +58,17 @@ def add_record(username, amount, category, wallet_id, date, time, note, type, wa
         }
     for user in data:
         if user["username"] == username:
-            for wallet in user["wallet"]:
-                if wallet["id"] == wallet_id:
-                    wallet["activity"].append(activity_data)
+            for dompet in user["wallet"]:
+                if dompet["id"] == wallet_id:
+                    dompet["activity"].append(activity_data)
                     core.write_data(data)
                     if type == "Pemasukan":
-                        wallet.add_balance(username, wallet_id, amount)
+                        status = wallet.add_balance(username, wallet_id, amount)
                     elif type == "Pengeluaran":
-                        wallet.reduce_balance(username, wallet_id, amount)
+                        status = wallet.reduce_balance(username, wallet_id, amount)
                     else:
-                        wallet.reduce_balance(username, wallet_id, amount)
-                        wallet.add_balance(username, wallet_id_2, amount)
-                    return 0
+                        status = wallet.reduce_balance(username, wallet_id, amount)
+                        status = wallet.add_balance(username, wallet_id_2, amount)
+                    return status
     return 1
+
