@@ -388,13 +388,18 @@ def get_total_wallet(username):
     return total_wallet
 
           
-def get_wallet_id(username, index):
+def get_wallet_id(username, index, ex_id=-1):
     data = core.read_data()
+    wallets = []
     for user in data:
         if user["username"] == username:
             for i, wallet in enumerate(user["wallet"]):
-                if i == index:
-                    return wallet["id"]
+                if wallet["id"] != ex_id:
+                    wallets.append(wallet)
+
+    for i, wallet in enumerate(wallets):
+        if i == index:
+            return wallet["id"]
 
 
 def get_wallet_name(username, wallet_id):
