@@ -4,7 +4,7 @@ from datetime import datetime
 curr = datetime.now()
 
 
-def tampil_menu_catat_pengeluaran(username):
+def record_outcome_menu(username):
     key = ''
 
 
@@ -69,7 +69,7 @@ while key != 27:
             if key == 27:
         # tampil_menu_catat(username)
 
-def record_income(username, id_wallet, category, amount):
+def record_income(username, wallet_id, category, amount):
     file_name = "data/data.json"
 
     try:
@@ -107,7 +107,7 @@ def record_income(username, id_wallet, category, amount):
         print(f"\nError: {str(e)}\n")
 
 
-def record_outcome(username, id_wallet, category, amount):
+def record_outcome(username, wallet_id, category, amount):
     file_name = "data/data.json"
 
     try:
