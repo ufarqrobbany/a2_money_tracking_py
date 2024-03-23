@@ -1,15 +1,17 @@
 from src import core
 from src import menu
-import json
+from src import account
+
 
 def wallet_menu(username):
     current_selection = 1
 
     core.clear_screen()
     menu.header_menu()
-    menu.text_menu("Nama : ")
+    menu.text_menu(f"Nama : {account.get_account_name(username)}")
     menu.h_line()
-    total_wallet = 0
+    total_wallet = get_total_wallet(username)
+    display_wallet(username)
     menu.h_line()
 
     while True:
@@ -21,7 +23,7 @@ def wallet_menu(username):
         menu.nav_instruction()
 
         key = ord(core.get_key())
-        
+
         if key == 72 and current_selection > 1:
             current_selection -= 1
         elif key == 80 and current_selection < 4:
@@ -29,333 +31,362 @@ def wallet_menu(username):
         elif key == 13:
             if current_selection == 1:
                 if total_wallet < 10:
-                    # tampil_menu_tambah_dompet(username)
-                    pass
+                    add_wallet_menu(username)
                 else:
-                    menu.show_message("Tidak bisa menambah dompet, maksimal 10 dompet", 12 + total_wallet, True)
+                    menu.show_message("Tidak bisa menambah dompet, maksimal 10 dompet", 11 + total_wallet, True)
                     core.get_key()
             elif current_selection == 2:
-                # tampil_menu_ubah_nama_dompet(username)
-                pass
+                change_wallet_name_menu(username)
             elif current_selection == 3:
                 if total_wallet > 1:
                     # tampil_menu_hapus_dompet(username)
                     pass
                 else:
-                    menu.show_message("Tidak bisa menghapus dompet, sisakan 1 dompet di akunmu", 12 + total_wallet, True)
+                    menu.show_message("Tidak bisa menghapus dompet, sisakan 1 dompet di akunmu", 11 + total_wallet, True)
                     core.get_key()
             elif current_selection == 4:
                 menu.home_menu(username)
             break
 
-        
-def get_wallet_balance(username, id_dompet):
-    file_name = f"data/data.json"
-
-    try:
-        with open(file_name, "r") as file:
-            data = json.load(file)
-            for user_data in data:
-                if user_data.get("username") == username:
-                    wallets = user_data.get("wallet", [])
-                    for wallet_data in wallets:
-                        if wallet_data.get("id") == id_dompet:
-                            return wallet_data.get("saldo")
-    except FileNotFoundError:
-        print("\nGagal membuka file dompet\n")
-    except Exception as e:
-        print(f"\nError: {str(e)}\n")
-    
-    print(f"\nDompet dengan ID '{id_dompet}' tidak ditemukan untuk pengguna '{username}'\n")
-    return -1
-
-def get_wallet(username, display):
-    file_name = f"data/data.json"
-
-    n = 0
-
-    try:
-        with open(file_name, "r") as file:
-            data = json.load(file)
-            for user_data in data:
-                if user_data.get("username") == username:
-                    wallets = user_data.get("wallet", [])
-                    if display:
-                        print("Daftar dompet:")
-                    for wallet_data in wallets:
-                        wallet_nama_dompet = wallet_data.get("nama_dompet")
-                        saldo = wallet_data.get("saldo")
-                        if wallet_nama_dompet.strip() != "":
-                            if display:
-                                print(f"- {wallet_nama_dompet}, {saldo}")
-                            n += 1
-    except FileNotFoundError:
-        print("\nGagal membuka file\n")
-    except Exception as e:
-        print(f"\nError: {str(e)}\n")
-
-    return n
-
-def get_wallet_name(username, id_dompet):
-    file_name = f"data/data.json"
-
-    try:
-        with open(file_name, "r") as file:
-            data = json.load(file)
-            for user in data:
-                if user['username'] == username:
-                    for wallet in user['wallet']:
-                        if wallet['id'] == id_dompet:
-                            return wallet['nama_dompet']
-    except FileNotFoundError:
-        print(f"\nGagal membuka file dompet {file_name}\n")
-    except Exception as e:
-        print(f"\nError: {str(e)}\n")
-    
-    print(f"\nDompet dengan ID '{id_dompet}' tidak ditemukan\n")
-    return None
-
-
-def newDompet(nama_dompet, saldo_awal):
-    dataBaru = {
-        "id": 1,
-        "nama_dompet": nama_dompet,
-        "saldo": saldo_awal,
-        "actitivy": []
-    }
-    return [dataBaru]
-
-def tambahDompet(username, nama_dompet, saldo_awal):
-    data = core.read_data()
-    found = False
-    index = None
-    for i in range(len(data)):
-        if data[i]['username'] == username:
-            found = True
-            index = i
-            break
-    if found:
-        data[index]['wallet'].append(newDompet(nama_dompet, saldo_awal))
-        core.write_data(data)
-        return 0
-    else:
-        return 1
-    
-def hapusDompet(username, nama_dompet):
-    data = core.read_data()
-    found = False
-    index = None
-    for i in range(len(data)):
-        if data[i]['username'] == username:
-            found = True
-            index = i
-            break
-    if found:
-        for j in range(len(data[index]['wallet'])):
-            if data[index]['wallet'][j]['nama_dompet'] == nama_dompet:
-                data[index]['wallet'] = data[index]['wallet'][:j] + data[index]['wallet'][j+1:]
-                core.write_data(data)
-                return 0
-    return 1
 
 def add_wallet_menu(username):
-    nama_dompet = ""
-    saldo_awal = ""
-    key = ''
-    jml_dompet = 0
-    n = 0
-    p = 1
+    wallet_name = ""
+    first_balance = "0"
+    total_wallet = get_total_wallet(username)
+    input_length = 0
+    input_order = 1
     status = 1
-    saldo = 0
+
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.h_line()
+    display_wallet(username)
+    menu.h_line()
+    menu.text_menu("Tambah Dompet Baru")
+    menu.h_line()
+    menu.text_menu("Nama Dompet Baru\t:")
+    menu.text_menu(f"Saldo Awal\t\t: \033[92m{core.format_rupiah(int(first_balance))}\033[0m")
 
     while status == 1:
-        core.clear_screen()
-
-        # Print header
-        menu.header_menu()
-        menu.text_menu("Nama :")
-        menu.h_line()
-        menu.text_menu("Tambah dompet baru")
-        menu.h_line()
-
-        #jml_dompet = get_dompet(username, True)
-
-        menu.h_line()
-        menu.text_menu("Nama Dompet\t: ")
-        menu.text_menu("Saldo Awal\t: ", end='')
-        #format_rupiah(saldo)
+        core.goto_xy(0, 11 + total_wallet)
         menu.back_instruction()
-        core.goto_xy(19, 4 + jml_dompet + 5)
+        core.goto_xy(26, 4 + total_wallet + 5)
 
         while True:
             key = ord(core.get_key())
-            if (key.isalnum() or key.isdigit() or key == ' ' or (n<20)):
-                if (p == 1):
-                    nama_dompet = key
-                    n += 1
-                    print(key)
-                    core.goto_xy(19 + n, 8 + p + jml_dompet)
-                elif ((p == 2) and (key >= '0' and key <= '9') and (n < 8)):
-                    saldo_awal[n] = key
-                    n += 1
-                    saldo = int(''.join(saldoawal))
-                    core.goto_xy(19, 8 + p + jml_dompet)
-                    print("                  ", end='')
-                    core.goto_xy(19, 8 + p + jml_dompet)
-                    #format_rupiah(saldo)
-                    #core.goto_xy(19 + get_length_format_rupiah(saldo) + 2, 8 + p + jml_dompet)
+            if core.check_key(key) and (input_length < 20):
+                if input_order == 1:
+                    wallet_name += chr(key)
+                    print(f"\033[92m{chr(key)}\033[0m")
+                    input_length += 1
+                    core.goto_xy(26 + input_length, 8 + input_order + total_wallet)
+                elif (input_order == 2) and core.check_key(key, True) and (input_length < 9):
+                    first_balance += chr(key)
+                    input_length += 1
+                    core.goto_xy(26, 8 + input_order + total_wallet)
+                    print("                     ")
+                    core.goto_xy(26, 8 + input_order + total_wallet)
+                    print(f"\033[92m{core.format_rupiah(int(first_balance))}\033[0m")
+                    core.goto_xy(26 + len(core.format_rupiah(int(first_balance))), 8 + input_order + total_wallet)
             elif key == 13:
-                if n == 0 and p == 2:
-                    saldo = 0
-                    p = 1
-                    n = 0
+                if input_length == 0 and input_order == 2:
+                    first_balance = "0"
+                    input_order = 1
+                    input_length = 0
                     break
-                if n > 0:
-                    if p == 1:
-                        nama_dompet[n] = '\0'
-                        p = 2
-                        n = 0
-                        core.goto_xy(19 + n + 2, 8 + p + jml_dompet)
+                if input_length > 0:
+                    if input_order == 1:
+                        input_order = 2
+                        input_length = 0
+                        core.goto_xy(26 + input_length + 2, 8 + input_order + total_wallet)
                     else:
-                        saldoawal[n] = '\0'
-                        saldo = int(''.join(saldoawal))
-                        p = 1
-                        n = 0
+                        input_order = 1
+                        input_length = 0
                         break
             elif key == 8:
-                if n > 0:
-                    if p == 1:
-                        print("\b \b", end='', flush=True)
-                    n -= 1
-                    if p == 2:
-                        saldoawal[n] = '\0'
-                        saldo = int(''.join(saldoawal)) if saldoawal[0] else 0
-                        core.goto_xy(19, 5 + p + jml_dompet)
-                        print("                  ", end='')
-                        core.goto_xy(19, 5 + p + jml_dompet)
-                        #format_rupiah(saldo)
-                        #core.goto_xy(19 + get_length_format_rupiah(saldo) + 2, 5 + p + jml_dompet)
+                if input_length > 0:
+                    if input_order == 1:
+                        print("\b \b")
+                        input_length -= 1
+                        wallet_name = wallet_name[:-1]
+                        core.goto_xy(26 + input_length, 8 + input_order + total_wallet)
+                    if input_order == 2:
+                        input_length -= 1
+                        first_balance = first_balance[:-1]
+                        core.goto_xy(26, 8 + input_order + total_wallet)
+                        print("                     ")
+                        core.goto_xy(26, 8 + input_order + total_wallet)
+                        print(f"\033[92m{core.format_rupiah(int(first_balance))}\033[0m")
+                        core.goto_xy(26 + len(core.format_rupiah(int(first_balance))), 8 + input_order + total_wallet)
             elif key == 27:
                 break
 
         if key == 13:
-            core.goto_xy(1, 9 + 2 + jml_dompet)
-            #status = tambah_dompet(username, nama_dompet, saldo)
-            input()
-
+            status = add_wallet(username, wallet_name, int(first_balance))
             if status == 1:
-                saldoawal = [' '] * 9
-                saldo = 0
-
-                core.goto_xy(19, 5 + p + jml_dompet)
-                print("                  ", end='')
-                core.goto_xy(19, 5 + p + jml_dompet)
-                #format_rupiah(saldo)
-                #core.goto_xy(19 + get_length_format_rupiah(saldo) + 2, 5 + p + jml_dompet)
+                menu.show_message("Nama dompet sudah ada", 11 + total_wallet, status)
+                core.get_key()
+                first_balance = "0"
+                wallet_name = ""
+                core.goto_xy(26, 8 + input_order + total_wallet)
+                print("                     ")
+                core.goto_xy(26, 9 + input_order + total_wallet)
+                print("                     ")
+                core.goto_xy(26, 9 + input_order + total_wallet)
+                print(f"\033[92m{core.format_rupiah(int(first_balance))}\033[0m")
+                core.goto_xy(26 + len(core.format_rupiah(int(first_balance))), 8 + input_order + total_wallet)
+            else:
+                menu.show_message("Berhasil menambah dompet baru", 11 + total_wallet, status)
+                core.get_key()
+                wallet_menu(username)
+                break
 
         if key == 27 or status == 0:
+            wallet_menu(username)
             break
 
-    if status == 0:
-        print()
-        #tampil_menu_dompet(username)
+
+def add_wallet(username, wallet_name, first_balance):
+    data = core.read_data()
+
+    new_wallet = {
+        "id": get_last_wallet_id(username) + 1,
+        "wallet_name": wallet_name,
+        "balance": first_balance,
+        "activity": []
+    }
+
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["wallet_name"] == wallet_name:
+                    return 1
+            user["wallet"].append(new_wallet)
+            core.write_data(data)
+            return 0
 
 
-def get_last_dompet(username):
-    file_name = f"data/data.json"
-    id_dompet = 0
+def change_wallet_name_menu(username):
+    current_selection = 1
 
-    try:
-        with open(file_name, "r") as file:
-            data = json.load(file)
-            for user in data:
-                if user['username'] == username:
-                    for wallet in user['wallet']:
-                        id_dompet = wallet['id']
-        return id_dompet
-    except FileNotFoundError:
-        print(f"\nGagal membuka file dompet {file_name}\n")
-    except Exception as e:
-        print(f"\nError: {str(e)}\n")
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.h_line()
+    menu.text_menu("Pilih dompet yang akan diubah namanya")
+    menu.h_line()
 
-    
-def add_balance(username, id_dompet, nominal):
-    file_name = "data/data.json"
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            while True:
+                total_wallet = 0
+                core.goto_xy(0, 7)
+                for index, wallet in enumerate(user["wallet"]):
+                    menu.option(f"{wallet["wallet_name"]}, {core.format_rupiah(wallet['balance'])}", current_selection, index + 1)
+                    total_wallet += 1
 
-    try:
-        with open(file_name, "r+") as file:
-            data = json.load(file)
-            for user in data:
-                if user.get("username") == username:
-                    wallets = user.get("wallet", [])
-                    for wallet in wallets:
-                        if wallet.get("id") == id_dompet:
-                            saldo = wallet.get("saldo")
-                            if saldo is not None:
-                                new_saldo = saldo + nominal
-                                wallet["saldo"] = new_saldo
-                                file.seek(0)
-                                json.dump(data, file, indent=4)
-                                file.truncate()
-                                return
-                            else:
-                                print("\nSaldo tidak ditemukan untuk dompet tersebut\n")
-                                return
-                    print("\nDompet dengan ID yang diberikan tidak ditemukan\n")
-                    return
-            print("\nUsername tidak ditemukan\n")
-    except FileNotFoundError:
-        print("\nGagal membuka file dompet\n")
-    except Exception as e:
-        print(f"\nError: {str(e)}\n")
+                menu.option("Kembali", current_selection, total_wallet + 1, True)
+                menu.nav_instruction()
+                core.goto_xy(0, 0)
 
-def reduce_balance(username, id_dompet, nominal):
-    file_name = "data/data.json"
+                key = ord(core.get_key())
 
-    try:
-        with open(file_name, "r+") as file:
-            data = json.load(file)
-            for user in data:
-                if user.get("username") == username:
-                    wallets = user.get("wallet", [])
-                    for wallet in wallets:
-                        if wallet.get("id") == id_dompet:
-                            saldo = wallet.get("saldo")
-                            if saldo is not None:
-                                new_saldo = saldo - nominal
-                                wallet["saldo"] = new_saldo
-                                file.seek(0)
-                                json.dump(data, file, indent=4)
-                                file.truncate()
-                                return
-                            else:
-                                print("\nSaldo tidak ditemukan untuk dompet tersebut\n")
-                                return
-                    print("\nDompet dengan ID yang diberikan tidak ditemukan\n")
-                    return
-            print("\nUsername tidak ditemukan\n")
-    except FileNotFoundError:
-        print("\nGagal membuka file dompet\n")
-    except Exception as e:
-        print(f"\nError: {str(e)}\n")
+                if key == 72 and current_selection > 1:
+                    current_selection -= 1
+                elif key == 80 and current_selection < total_wallet + 1:
+                    current_selection += 1
+                elif key == 13:
+                    if current_selection <= total_wallet:
+                        wallet_id = get_wallet_id(username, current_selection - 1)
+                        change_wallet_name_input(username, wallet_id)
+                    elif current_selection == total_wallet + 1:
+                        wallet_menu(username)
+                    break
+                    
 
-def change_wallet_name(username, id_dompet, newName):
-    file_name = f"data/data.json"
+def change_wallet_name_input(username, wallet_id):
+    new_name = ""
+    input_length = 0
+    status = 1
 
-    try:
-        with open(file_name, "r+") as file:
-            data = json.load(file)
-            for user in data:
-                if user['username'] == username:
-                    for wallet in user['wallet']:
-                        if wallet['id'] == id_dompet:
-                            wallet['nama_dompet'] = newName
-                            file.seek(0)
-                            json.dump(data, file, indent=4)
-                            file.truncate()
-                            return
-            print(f"\nDompet dengan ID '{id_dompet}' tidak ditemukan\n")
-    except FileNotFoundError:
-        print(f"\nGagal membuka file dompet {file_name}\n")
-    except Exception as e:
-        print(f"\nError: {str(e)}\n")
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : {account.get_account_name(username)}")
+    menu.h_line()
+    menu.text_menu(f"Ubah Nama Dompet : {get_wallet_name(username, wallet_id)}")
+    menu.h_line()
+    menu.text_menu("Nama Baru\t:")
+
+    while status == 1:
+        core.goto_xy(0, 8)
+        menu.back_instruction()
+        core.goto_xy(18, 7)
+
+        while True:
+            key = ord(core.get_key())
+            if core.check_key(key) and (input_length < 20):
+                new_name += chr(key)
+                print(f"\033[92m{chr(key)}\033[0m")
+                input_length += 1
+                core.goto_xy(18 + input_length, 7)
+            elif key == 13:
+                if input_length > 0:
+                    input_length = 0
+                    break
+            elif key == 8:
+                if input_length > 0:
+                    print("\b \b")
+                    input_length -= 1
+                    new_name = new_name[:-1]
+                    core.goto_xy(18 + input_length, 7)
+            elif key == 27:
+                break
+
+        if key == 13:
+            status = change_wallet_name(username, wallet_id, new_name)
+            if status == 1:
+                menu.show_message("Nama dompet sudah ada", 8, status)
+                core.get_key()
+                new_name = ""
+                core.goto_xy(18, 7)
+                print("                     ")
+                core.goto_xy(18, 7)
+            else:
+                menu.show_message("Berhasil mengubah nama dompet", 8, status)
+                core.get_key()
+                wallet_menu(username)
+                break
+
+        if key == 27 or status == 0:
+            change_wallet_name_menu(username)
+            break
+                
+              
+def change_wallet_name(username, wallet_id, new_name):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["wallet_name"] == new_name:
+                    return 1
+            for wallet in user["wallet"]:
+                if wallet["id"] == wallet_id:
+                    wallet["wallet_name"] = new_name
+                    core.write_data(data)
+                    return 0
+            return 1
+          
+          
+def display_wallet(username):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            menu.text_menu("List Dompet :")
+            for wallet in user["wallet"]:
+                menu.text_menu(f"○ {wallet["wallet_name"]}, {core.format_rupiah(wallet['balance'])}")
+
+
+def get_total_wallet(username):
+    data = core.read_data()
+    total_wallet = 0
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                total_wallet += 1
+
+    return total_wallet
+
+def delete_wallet(username, wallet_id):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["id"] == wallet_id:
+                    user["wallet"].remove(wallet)
+                    core.write_data(data)
+                    return 0
+            return 1
+
+def get_wallet_id(username, index):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for i, wallet in enumerate(user["wallet"]):
+                if i == index:
+                    return wallet["id"]
+
+
+def get_wallet_name(username, wallet_id):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["id"] == wallet_id:
+                    return wallet["wallet_name"]
+
+    print(f"Dompet dengan ID '{wallet_id}' tidak ditemukan")
+    return None
+
+
+def get_total_balance(username):
+    data = core.read_data()
+    total_balance = 0
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                total_balance += wallet["balance"]
+
+    return total_balance
+
+
+def get_wallet_balance(username, wallet_id):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["id"] == wallet_id:
+                    return wallet["balance"]
+
+    print(f"Dompet dengan ID '{wallet_id}' tidak ditemukan untuk pengguna '{username}'")
+    return -1
+
+
+def get_last_wallet_id(username):
+    data = core.read_data()
+    wallet_id = 0
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                wallet_id = wallet["id"]
+
+    return wallet_id
+
+
+def add_balance(username, wallet_id, amount):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["id"] == wallet_id:
+                    if (wallet["balance"] + amount) <= 999999999:
+                        wallet["balance"] = wallet["balance"] + amount
+                        core.write_data(data)
+                        return 0
+                    else:
+                        return 1
+
+
+def reduce_balance(username, wallet_id, amount):
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                if wallet["id"] == wallet_id:
+                    if (wallet["balance"] - amount) >= 0:
+                        wallet["balance"] = wallet["balance"] - amount
+                        core.write_data(data)
+                        return 0
+                    else:
+                        return 1
