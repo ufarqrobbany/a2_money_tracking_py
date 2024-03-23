@@ -278,6 +278,7 @@ def change_wallet_name(username, wallet_id, new_name):
                     return 0
             return 1
 
+
 def delete_wallet_menu(username):
     current_selection = 1
 
@@ -316,6 +317,7 @@ def delete_wallet_menu(username):
                         wallet_menu(username)
                     break
 
+                    
 def delete_wallet_confirm_menu(username, wallet_id):
     current_selection = 1
 
@@ -350,6 +352,7 @@ def delete_wallet_confirm_menu(username, wallet_id):
                 core.get_key()
                 wallet_menu(username)
             break          
+
           
 def display_wallet(username):
     data = core.read_data()
