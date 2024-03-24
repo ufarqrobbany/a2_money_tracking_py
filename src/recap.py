@@ -649,3 +649,350 @@ def annual_recap_menu(username):
             elif current_selection == len(list_years) + 1:
                 recap_menu(username)
             break
+
+def daily_recap(username, date):
+    core.goto_xy(0, 0)
+    data = core.read_data()
+    total_outcome = 0
+    total_income = 0
+    income_categories = {}
+    outcome_categories = {}
+
+    core.clear_screen()
+    all_activities = []
+
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                for activity in wallet["activity"]:
+                    activity_date = datetime.datetime.strptime(activity['datetime'], '%d%m%Y %H%M').strftime('%d%m%Y')
+                    if activity_date == date:
+                        all_activities.append(activity)
+                        if activity["type"] == "Pemasukan":
+                            total_income += int(activity["amount"])
+                            income_categories[activity["category"]] = income_categories.get(activity["category"], 0) + int(activity["amount"])
+                        elif activity["type"] == "Pengeluaran":
+                            total_outcome += int(activity["amount"])
+                            outcome_categories[activity["category"]] = outcome_categories.get(activity["category"], 0) + int(activity["amount"])
+
+    sorted_all_activities = sorted(all_activities,
+                                   key=lambda x: datetime.datetime.strptime(x['datetime'], '%d%m%Y %H%M'),
+                                   reverse=True)
+
+    menu.header_menu()
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
+    menu.h_line()
+    menu.text_menu(f"Rekap {core.format_date_2(date)}")
+    menu.h_line()
+    menu.text_menu(f"Total Pemasukan\t: \033[94m{core.format_rupiah(total_income)}\033[0m")
+    menu.text_menu(f"Total Pengeluaran\t: \033[94m{core.format_rupiah(total_outcome)}\033[0m")
+
+    menu.h_line()
+    menu.text_menu("Persentase Pemasukan per Kategori:")
+    for category, amount in income_categories.items():
+        percentage = (amount / total_income) * 100
+        menu.text_menu(
+            f"   {category}: \033[95m{percentage:.2f}%\033[0m (Total: \033[94m{core.format_rupiah(amount)}\033[0m)")
+    if len(income_categories) == 0:
+        menu.text_menu("   Tidak ada kategori")
+
+    print("")
+    menu.text_menu("Persentase Pengeluaran per Kategori:")
+    for category, amount in outcome_categories.items():
+        percentage = (amount / total_outcome) * 100
+        menu.text_menu(
+            f"   {category}: \033[95m{percentage:.2f}%\033[0m (Total: \033[94m{core.format_rupiah(amount)}\033[0m)")
+    if len(outcome_categories) == 0:
+        menu.text_menu("   Tidak ada kategori")
+
+    menu.h_line()
+    for index, activity in enumerate(sorted_all_activities):
+        menu.text_menu(f"Tanggal\t\t: {core.format_date_2(activity['datetime'].split()[0])}")
+        menu.text_menu(f"Waktu\t\t: {core.format_time(activity['datetime'].split()[1])}")
+        if activity["type"] == "Pengeluaran":
+            menu.text_menu(f"Jenis\t\t: \033[31m{activity['type']}\033[0m")
+            menu.text_menu(f"Kategori\t\t: {activity['category']}")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Asal\t\t: \033[95m{get_wallet_name(username, activity['wallet_id'])}\033[0m")
+        elif activity["type"] == "Pemasukan":
+            menu.text_menu(f"Jenis\t\t: \033[92m{activity['type']}\033[0m")
+            menu.text_menu(f"Kategori\t\t: {activity['category']}")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Tujuan\t: \033[95m{get_wallet_name(username, activity['wallet_id'])}\033[0m")
+        elif activity["type"] == "Transfer":
+            menu.text_menu(f"Jenis\t\t: \033[33m{activity['type']}\033[0m")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Asal\t\t: \033[95m{get_wallet_name(username, activity['source_wallet_id'])}\033[0m")
+            menu.text_menu(f"Dompet Tujuan\t: \033[95m{get_wallet_name(username, activity['destination_wallet_id'])}\033[0m")
+        menu.text_menu(f"Keterangan\t\t: {activity['note']}")
+
+        if index < len(sorted_all_activities) - 1:
+            menu.text_menu(f"----------------------------------------------------")
+
+    print("")
+
+    menu.h_line()
+    menu.text_menu("Tekan ESC untuk kembali")
+    menu.h_line()
+
+    while True:
+        key = ord(core.get_key())
+
+        if key == 27:
+            core.clear_screen()
+            recap_menu(username)
+            break
+
+
+def weekly_recap(username, week_start, week_end):
+    core.goto_xy(0, 0)
+    data = core.read_data()
+    total_outcome = 0
+    total_income = 0
+    income_categories = {}
+    outcome_categories = {}
+
+    core.clear_screen()
+    all_activities = []
+
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                for activity in wallet["activity"]:
+                    activity_date = datetime.datetime.strptime(activity['datetime'], '%d%m%Y %H%M').strftime('%Y-%m-%d')
+                    if str(week_start) <= activity_date <= str(week_end):
+                        all_activities.append(activity)
+                        if activity["type"] == "Pemasukan":
+                            total_income += int(activity["amount"])
+                            income_categories[activity["category"]] = income_categories.get(activity["category"], 0) + int(activity["amount"])
+                        elif activity["type"] == "Pengeluaran":
+                            total_outcome += int(activity["amount"])
+                            outcome_categories[activity["category"]] = outcome_categories.get(activity["category"], 0) + int(activity["amount"])
+
+    sorted_all_activities = sorted(all_activities,
+                                   key=lambda x: datetime.datetime.strptime(x['datetime'], '%d%m%Y %H%M'),
+                                   reverse=True)
+
+    menu.header_menu()
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
+    menu.h_line()
+    menu.text_menu(f"Rekap Mingguan")
+    menu.text_menu(f"{core.format_date_2(week_start.strftime('%d%m%Y'))} sampai {core.format_date_2(week_end.strftime('%d%m%Y'))}")
+    menu.h_line()
+    menu.text_menu(f"Total Pemasukan\t: \033[94m{core.format_rupiah(total_income)}\033[0m")
+    menu.text_menu(f"Total Pengeluaran\t: \033[94m{core.format_rupiah(total_outcome)}\033[0m")
+
+    menu.h_line()
+    menu.text_menu("Persentase Pemasukan per Kategori:")
+    for category, amount in income_categories.items():
+        percentage = (amount / total_income) * 100
+        menu.text_menu(
+            f"   {category}: \033[95m{percentage:.2f}%\033[0m (Total: \033[94m{core.format_rupiah(amount)}\033[0m)")
+    if len(income_categories) == 0:
+        menu.text_menu("   Tidak ada kategori")
+
+    print("")
+    menu.text_menu("Persentase Pengeluaran per Kategori:")
+    for category, amount in outcome_categories.items():
+        percentage = (amount / total_outcome) * 100
+        menu.text_menu(
+            f"   {category}: \033[95m{percentage:.2f}%\033[0m (Total: \033[94m{core.format_rupiah(amount)}\033[0m)")
+    if len(outcome_categories) == 0:
+        menu.text_menu("   Tidak ada kategori")
+
+    menu.h_line()
+    for index, activity in enumerate(sorted_all_activities):
+        menu.text_menu(f"Tanggal\t\t: {core.format_date_2(activity['datetime'].split()[0])}")
+        menu.text_menu(f"Waktu\t\t: {core.format_time(activity['datetime'].split()[1])}")
+        if activity["type"] == "Pengeluaran":
+            menu.text_menu(f"Jenis\t\t: \033[31m{activity['type']}\033[0m")
+            menu.text_menu(f"Kategori\t\t: {activity['category']}")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Asal\t\t: \033[95m{get_wallet_name(username, activity['wallet_id'])}\033[0m")
+        elif activity["type"] == "Pemasukan":
+            menu.text_menu(f"Jenis\t\t: \033[92m{activity['type']}\033[0m")
+            menu.text_menu(f"Kategori\t\t: {activity['category']}")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Tujuan\t: \033[95m{get_wallet_name(username, activity['wallet_id'])}\033[0m")
+        elif activity["type"] == "Transfer":
+            menu.text_menu(f"Jenis\t\t: \033[33m{activity['type']}\033[0m")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Asal\t\t: \033[95m{get_wallet_name(username, activity['source_wallet_id'])}\033[0m")
+            menu.text_menu(f"Dompet Tujuan\t: \033[95m{get_wallet_name(username, activity['destination_wallet_id'])}\033[0m")
+        menu.text_menu(f"Keterangan\t\t: {activity['note']}")
+
+        if index < len(sorted_all_activities) - 1:
+            menu.text_menu(f"----------------------------------------------------")
+
+    print("")
+
+    menu.h_line()
+    menu.text_menu("Tekan ESC untuk kembali")
+    menu.h_line()
+
+    while True:
+        key = ord(core.get_key())
+
+        if key == 27:
+            core.clear_screen()
+            recap_menu(username)
+            break
+
+
+def monthly_recap_select_month(username, year):
+    core.goto_xy(0, 0)
+    current_selection = 1
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
+    menu.h_line()
+    menu.text_menu(f"Rekap Bulan (Pilih Bulan untuk Tahun {year})")
+    menu.h_line()
+
+    list_months = []
+
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                for activity in wallet["activity"]:
+                    activity_year = activity["datetime"].split()[0][-4:]
+                    activity_month = activity["datetime"].split()[0][2:4]
+                    if activity_year == year:
+                        list_months.append(activity_month)
+
+    list_months = sorted(set(list_months))
+
+    core.goto_xy(0, 8 + len(list_months))
+    menu.nav_instruction()
+
+    while True:
+        core.goto_xy(0, 7)
+        for index, month in enumerate(list_months):
+            months = {
+                1: "Januari",
+                2: "Februari",
+                3: "Maret",
+                4: "April",
+                5: "Mei",
+                6: "Juni",
+                7: "Juli",
+                8: "Agustus",
+                9: "September",
+                10: "Oktober",
+                11: "November",
+                12: "Desember"
+            }
+            str_month = months.get(int(month), "Invalid")
+            menu.option(
+                f"Bulan {str_month}", current_selection, index + 1)
+        menu.option("Kembali", current_selection, len(list_months) + 1, True)
+        core.goto_xy(0, 0)
+
+        key = ord(core.get_key())
+
+        if key == 72 and current_selection > 1:
+            current_selection -= 1
+        elif key == 80 and current_selection < len(list_months) + 1:
+            current_selection += 1
+        elif key == 13:
+            if current_selection <= len(list_months):
+                month = list_months[current_selection - 1]
+                month_year = f"{month}{year}"
+                monthly_recap(username, month_year)
+            elif current_selection == len(list_months) + 1:
+                monthly_recap_select_year(username)
+            break
+
+def monthly_recap(username, month_year):
+    core.goto_xy(0, 0)
+    data = core.read_data()
+    total_outcome = 0
+    total_income = 0
+    income_categories = {}
+    outcome_categories = {}
+
+    core.clear_screen()
+    all_activities = []
+
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                for activity in wallet["activity"]:
+                    activity_month_year = activity['datetime'].split()[0][2:]
+                    if activity_month_year == month_year:
+                        all_activities.append(activity)
+                        if activity["type"] == "Pemasukan":
+                            total_income += int(activity["amount"])
+                            income_categories[activity["category"]] = income_categories.get(activity["category"], 0) + int(activity["amount"])
+                        elif activity["type"] == "Pengeluaran":
+                            total_outcome += int(activity["amount"])
+                            outcome_categories[activity["category"]] = outcome_categories.get(activity["category"], 0) + int(activity["amount"])
+
+    sorted_all_activities = sorted(all_activities,
+                                   key=lambda x: datetime.datetime.strptime(x['datetime'], '%d%m%Y %H%M'),
+                                   reverse=True)
+
+    menu.header_menu()
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
+    menu.h_line()
+    menu.text_menu(f"Rekap Bulan {core.format_date_2(f"11{month_year}", False)}")
+    menu.h_line()
+    menu.text_menu(f"Total Pemasukan\t: \033[94m{core.format_rupiah(total_income)}\033[0m")
+    menu.text_menu(f"Total Pengeluaran\t: \033[94m{core.format_rupiah(total_outcome)}\033[0m")
+
+    menu.h_line()
+    menu.text_menu("Persentase Pemasukan per Kategori:")
+    for category, amount in income_categories.items():
+        percentage = (amount / total_income) * 100
+        menu.text_menu(
+            f"   {category}: \033[95m{percentage:.2f}%\033[0m (Total: \033[94m{core.format_rupiah(amount)}\033[0m)")
+    if len(income_categories) == 0:
+        menu.text_menu("   Tidak ada kategori")
+
+    print("")
+    menu.text_menu("Persentase Pengeluaran per Kategori:")
+    for category, amount in outcome_categories.items():
+        percentage = (amount / total_outcome) * 100
+        menu.text_menu(
+            f"   {category}: \033[95m{percentage:.2f}%\033[0m (Total: \033[94m{core.format_rupiah(amount)}\033[0m)")
+    if len(outcome_categories) == 0:
+        menu.text_menu("   Tidak ada kategori")
+
+    menu.h_line()
+    for index, activity in enumerate(sorted_all_activities):
+        menu.text_menu(f"Tanggal\t\t: {core.format_date_2(activity['datetime'].split()[0])}")
+        menu.text_menu(f"Waktu\t\t: {core.format_time(activity['datetime'].split()[1])}")
+        if activity["type"] == "Pengeluaran":
+            menu.text_menu(f"Jenis\t\t: \033[31m{activity['type']}\033[0m")
+            menu.text_menu(f"Kategori\t\t: {activity['category']}")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Asal\t\t: \033[95m{get_wallet_name(username, activity['wallet_id'])}\033[0m")
+        elif activity["type"] == "Pemasukan":
+            menu.text_menu(f"Jenis\t\t: \033[92m{activity['type']}\033[0m")
+            menu.text_menu(f"Kategori\t\t: {activity['category']}")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Tujuan\t: \033[95m{get_wallet_name(username, activity['wallet_id'])}\033[0m")
+        elif activity["type"] == "Transfer":
+            menu.text_menu(f"Jenis\t\t: \033[33m{activity['type']}\033[0m")
+            menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+            menu.text_menu(f"Dompet Asal\t\t: \033[95m{get_wallet_name(username, activity['source_wallet_id'])}\033[0m")
+            menu.text_menu(f"Dompet Tujuan\t: \033[95m{get_wallet_name(username, activity['destination_wallet_id'])}\033[0m")
+        menu.text_menu(f"Keterangan\t\t: {activity['note']}")
+
+        if index < len(sorted_all_activities) - 1:
+            menu.text_menu(f"----------------------------------------------------")
+
+    print("")
+
+    menu.h_line()
+    menu.text_menu("Tekan ESC untuk kembali")
+    menu.h_line()
+
+    while True:
+        key = ord(core.get_key())
+
+        if key == 27:
+            core.clear_screen()
+            recap_menu(username)
+            break
