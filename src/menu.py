@@ -5,6 +5,7 @@ from src import record_income
 from src import record_outcome
 from src import record_transfer
 from src import recap
+import datetime
 
 
 def h_line():
@@ -100,8 +101,8 @@ def home_menu(username):
     text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
     h_line()
     text_menu(f"Total Saldo saat ini (Semua Dompet)\t: \033[94m{core.format_rupiah(wallet.get_total_balance(username))}\033[0m")
-    text_menu(f"Pemasukan Bulan Ini ({core.get_date(False, False)})\t: \033[94m{core.format_rupiah(0)}\033[0m")
-    text_menu(f"Pengeluaran Bulan Ini ({core.get_date(False, False)})\t: \033[94m{core.format_rupiah(0)}\033[0m")
+    text_menu(f"Pemasukan Bulan Ini ({core.get_date(False, False)})\t: \033[94m{core.format_rupiah(recap.get_total_income_month(username))}\033[0m")
+    text_menu(f"Pengeluaran Bulan Ini ({core.get_date(False, False)})\t: \033[94m{core.format_rupiah(recap.get_total_outcome_month(username))}\033[0m")
     h_line()
     core.goto_xy(0, 15)
     nav_instruction()
@@ -128,7 +129,8 @@ def home_menu(username):
             elif current_selection == 2:
                 record_outcome.record_outcome_amount(username, "0")
             elif current_selection == 3:
-                record_transfer.record_transfer_source_wallet(username)
+                now = datetime.datetime.now().date().strftime('%d%m%Y')
+                record_transfer.record_transfer_source_wallet(username, now)
             elif current_selection == 4:
                 wallet.wallet_menu(username)
             elif current_selection == 5:
