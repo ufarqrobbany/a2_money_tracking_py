@@ -429,3 +429,108 @@ def category_recap(username):
             recap_menu(username)
             break
 
+            
+def all_income(username):
+    core.goto_xy(0, 0)
+    data = core.read_data()
+    total_income = 0
+
+    core.clear_screen()
+    income_activities = []
+
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                for activity in wallet["activity"]:
+                    if activity["type"] == "Pemasukan":
+                        total_income += int(activity["amount"])
+                        income_activities.append(activity)
+
+    sorted_income_activities = sorted(income_activities, key=lambda x: datetime.datetime.strptime(x['datetime'], '%d%m%Y %H%M'), reverse=True)
+
+    menu.header_menu()
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
+    menu.h_line()
+    menu.text_menu("Rekap Semua Pemasukan")
+    menu.h_line()
+    menu.text_menu(f"Total Pemasukan: \033[94m{core.format_rupiah(total_income)}\033[0m")
+
+    print("")
+    for index, activity in enumerate(sorted_income_activities):
+        menu.text_menu(f"Tanggal\t\t: {core.format_date_2(activity['datetime'].split()[0])}")
+        menu.text_menu(f"Waktu\t\t: {core.format_time(activity['datetime'].split()[1])}")
+        menu.text_menu(f"Kategori\t\t: {activity['category']}")
+        menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+        menu.text_menu(f"Dompet Tujuan\t: \033[95m{get_wallet_name(username, activity['wallet_id'])}\033[0m")
+        menu.text_menu(f"Keterangan\t\t: {activity['note']}")
+
+        if index < len(sorted_income_activities) - 1:
+            menu.text_menu(f"----------------------------------------------------")
+
+    print("")
+    menu.h_line()
+    menu.text_menu("Tekan ESC untuk kembali")
+    menu.h_line()
+
+    while True:
+        key = ord(core.get_key())
+
+        if key == 27:
+            core.clear_screen()
+            recap_menu(username)
+            break
+
+
+def all_outcome(username):
+    core.goto_xy(0, 0)
+    data = core.read_data()
+    total_outcome = 0
+
+    core.clear_screen()
+    outcome_activities = []
+
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                for activity in wallet["activity"]:
+                    if activity["type"] == "Pengeluaran":
+                        total_outcome += int(activity["amount"])
+                        outcome_activities.append(activity)
+
+    sorted_outcome_activities = sorted(outcome_activities,
+                                      key=lambda x: datetime.datetime.strptime(x['datetime'], '%d%m%Y %H%M'),
+                                      reverse=True)
+
+    menu.header_menu()
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
+    menu.h_line()
+    menu.text_menu("Rekap Semua Pengeluaran")
+    menu.h_line()
+    menu.text_menu(f"Total Pengeluaran: \033[94m{core.format_rupiah(total_outcome)}\033[0m")
+
+    print("")
+    for index, activity in enumerate(sorted_outcome_activities):
+        menu.text_menu(f"Tanggal\t\t: {core.format_date_2(activity['datetime'].split()[0])}")
+        menu.text_menu(f"Waktu\t\t: {core.format_time(activity['datetime'].split()[1])}")
+        menu.text_menu(f"Kategori\t\t: {activity['category']}")
+        menu.text_menu(f"Nominal\t\t: \033[94m{core.format_rupiah(int(activity['amount']))}\033[0m")
+        menu.text_menu(f"Dompet Asal\t\t: \033[95m{get_wallet_name(username, activity['wallet_id'])}\033[0m")
+        menu.text_menu(f"Keterangan\t\t: {activity['note']}")
+
+        if index < len(sorted_outcome_activities) - 1:
+            menu.text_menu(f"----------------------------------------------------")
+
+    print("")
+    menu.h_line()
+    menu.text_menu("Tekan ESC untuk kembali")
+    menu.h_line()
+
+    while True:
+        key = ord(core.get_key())
+
+        if key == 27:
+            core.clear_screen()
+            recap_menu(username)
+            break
+
+
