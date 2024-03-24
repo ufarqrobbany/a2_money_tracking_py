@@ -429,6 +429,7 @@ def category_recap(username):
             recap_menu(username)
             break
 
+            
 def all_income(username):
     core.goto_xy(0, 0)
     data = core.read_data()
@@ -531,4 +532,5 @@ def all_outcome(username):
             core.clear_screen()
             recap_menu(username)
             break
+
 

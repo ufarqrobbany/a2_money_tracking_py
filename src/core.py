@@ -104,3 +104,43 @@ def get_date(day=True, date=True, month=True, year=True):
 
     return result.strip()
 
+
+def format_date(number):
+    date_str = str(number)
+    length = len(date_str)
+    day = date_str[:2] if length >= 2 else date_str.ljust(2, '0')
+    month = date_str[2:4] if length >= 4 else date_str[2:].ljust(2, '0')
+    year = date_str[4:].ljust(4, '0')
+    return f"{day}/{month}/{year}"
+
+
+def format_date_2(number, displayDay=True):
+    day = int(number[:2])
+    month = int(number[2:4])
+    year = int(number[4:])
+    days_of_week = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+    day_of_week = days_of_week[datetime.datetime(year, month, day).weekday()]
+    months = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+              "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+    month_name = months[month]
+    if displayDay is True:
+        formatted_date = f"{day_of_week}, {day} {month_name} {year}"
+    else:
+        formatted_date = f"{month_name} {year}"
+    return formatted_date
+
+
+def check_time(hour, minute):
+    if 0 <= int(hour) <= 23 and 0 <= int(minute) <= 59:
+        return 0
+    else:
+        return 1
+
+
+def format_time(number):
+    time_str = str(number)
+    time_str = time_str.ljust(4, '0')
+    hour = int(time_str[:2])
+    minute = int(time_str[2:])
+    formatted_time = f"{hour:02d}:{minute:02d}"
+    return formatted_time
