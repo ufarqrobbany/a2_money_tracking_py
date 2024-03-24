@@ -264,7 +264,7 @@ def record_outcome_date(username, amount, category, wallet_id):
     menu.text_menu(f"Dompet Asal\t\t\t: \033[92m{wallet.get_wallet_name(username, wallet_id)}\033[0m")
     while status == 1:
         core.goto_xy(0, 10)
-        menu.text_menu(f"Tanggal \t\t\t: {core.format_date(int(date))}")
+        menu.text_menu(f"Tanggal \t\t\t: {core.format_date(date)}")
         date = ""
         menu.text_menu("Waktu \t\t\t: ")
         menu.text_menu("Keterangan (Opsional)\t: ")
@@ -281,7 +281,7 @@ def record_outcome_date(username, amount, category, wallet_id):
                 core.goto_xy(34, 10)
                 print("                     ")
                 core.goto_xy(34, 10)
-                print(f"\033[92m{core.format_date(int(date))}\033[0m")
+                print(f"\033[92m{core.format_date(date)}\033[0m")
                 if input_length < 2:
                     core.goto_xy(34 + input_length, 10)
                 elif input_length < 4:
@@ -302,7 +302,7 @@ def record_outcome_date(username, amount, category, wallet_id):
                     if date == "":
                         print(f"\033[92m{core.format_date(0)}\033[0m")
                     else:
-                        print(f"\033[92m{core.format_date(int(date))}\033[0m")
+                        print(f"\033[92m{core.format_date(date)}\033[0m")
                     if input_length < 2:
                         core.goto_xy(34 + input_length, 10)
                     elif input_length < 4:

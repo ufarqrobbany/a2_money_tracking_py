@@ -114,7 +114,7 @@ def format_date(number):
     return f"{day}/{month}/{year}"
 
 
-def format_date_2(number):
+def format_date_2(number, displayDay=True):
     day = int(number[:2])
     month = int(number[2:4])
     year = int(number[4:])
@@ -123,7 +123,10 @@ def format_date_2(number):
     months = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
               "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
     month_name = months[month]
-    formatted_date = f"{day_of_week}, {day} {month_name} {year}"
+    if displayDay is True:
+        formatted_date = f"{day_of_week}, {day} {month_name} {year}"
+    else:
+        formatted_date = f"{month_name} {year}"
     return formatted_date
 
 
@@ -141,4 +144,3 @@ def format_time(number):
     minute = int(time_str[2:])
     formatted_time = f"{hour:02d}:{minute:02d}"
     return formatted_time
-

@@ -67,8 +67,12 @@ def add_record(username, amount, category, wallet_id, date, time, note, type, wa
                     elif type == "Pengeluaran":
                         status = wallet.reduce_balance(username, wallet_id, amount)
                     else:
-                        status = wallet.reduce_balance(username, wallet_id, amount)
-                        status = wallet.add_balance(username, wallet_id_2, amount)
+                        status_1 = wallet.reduce_balance(username, wallet_id, amount)
+                        status_2 = wallet.add_balance(username, wallet_id_2, amount)
+                        if status_1 == status_2 and status_1 == 0:
+                            status = 0
+                        else:
+                            status = 1
                     return status
     return 1
 
