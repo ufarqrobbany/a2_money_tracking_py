@@ -557,4 +557,95 @@ def all_outcome(username):
             recap_menu(username)
             break
 
+def monthly_recap_menu(username):
+    core.goto_xy(0, 0)
+    current_selection = 1
 
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
+    menu.h_line()
+    menu.text_menu("Rekap Bulanan")
+    menu.h_line()
+    core.goto_xy(0, 11)
+    menu.nav_instruction()
+
+    today = datetime.date.today()
+    this_month = (datetime.date(today.year, today.month, 1))
+    last_month = (this_month - datetime.timedelta(days=this_month.day))
+
+    while True:
+        core.goto_xy(0, 7)
+        menu.option(
+            f"Bulan Ini ({core.format_date_2(this_month.strftime("%d%m%Y"), False)})",
+            current_selection, 1)
+        menu.option(
+            f"Bulan Kemarin ({core.format_date_2(last_month.strftime("%d%m%Y"), False)})",
+            current_selection, 2)
+        menu.option("Pilih Bulan", current_selection, 3)
+        menu.option("Kembali", current_selection, 4, True)
+        core.goto_xy(0, 0)
+
+        key = ord(core.get_key())
+
+        if key == 72 and current_selection > 1:
+            current_selection -= 1
+        elif key == 80 and current_selection < 4:
+            current_selection += 1
+        elif key == 13:
+            if current_selection == 1:
+                monthly_recap(username, this_month.strftime("%m%Y"))
+            elif current_selection == 2:
+                monthly_recap(username, last_month.strftime("%m%Y"))
+            elif current_selection == 3:
+                monthly_recap_select_year(username)
+            elif current_selection == 4:
+                recap_menu(username)
+            break
+
+
+def annual_recap_menu(username):
+    core.goto_xy(0, 0)
+    current_selection = 1
+    core.clear_screen()
+    menu.header_menu()
+    menu.text_menu(f"Nama : \033[95m{account.get_account_name(username)}\033[0m")
+    menu.h_line()
+    menu.text_menu("Rekap Tahunan")
+    menu.h_line()
+
+    list_years = []
+
+    data = core.read_data()
+    for user in data:
+        if user["username"] == username:
+            for wallet in user["wallet"]:
+                for activity in wallet["activity"]:
+                    tahun = activity["datetime"].split()[0]
+                    list_years.append(tahun[4:])
+
+    list_years = sorted(set(list_years), reverse=True)
+
+    core.goto_xy(0, 8 + len(list_years))
+    menu.nav_instruction()
+
+    while True:
+        core.goto_xy(0, 7)
+        for index, year in enumerate(list_years):
+            menu.option(
+                f"Tahun {year}", current_selection, index + 1)
+        menu.option("Kembali", current_selection, len(list_years) + 1, True)
+        core.goto_xy(0, 0)
+
+        key = ord(core.get_key())
+
+        if key == 72 and current_selection > 1:
+            current_selection -= 1
+        elif key == 80 and current_selection < len(list_years) + 1:
+            current_selection += 1
+        elif key == 13:
+            if current_selection <= len(list_years):
+                annual_recap(username, list_years[current_selection - 1])
+            elif current_selection == len(list_years) + 1:
+                recap_menu(username)
+            break
